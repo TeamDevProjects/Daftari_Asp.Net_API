@@ -1,7 +1,7 @@
 ﻿
 
 
-use Daftari;
+use Daftari; 
 
 -- select * from People
 -- select * from Users
