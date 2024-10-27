@@ -148,7 +148,7 @@ INSERT INTO SectorTypes VALUES
     (N'Fashion and Personal Care'),
     (N'Food and Beverages'),
     (N'Services');
-
+	select * from SectorTypes
 select * from SectorTypes
 --in Sectors
 INSERT INTO Sectors (SectorTypeId, SectorName) VALUES
