@@ -1,0 +1,6 @@
+@Daftari_HostAddress = http://localhost:5286
+
+GET {{Daftari_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
