@@ -5,7 +5,7 @@ namespace Daftari.Entities;
 
 public partial class SectorType
 {
-    public int SectorTypeId { get; set; }
+    public byte SectorTypeId { get; set; }
 
     public string SectorTypeName { get; set; } = null!;
 

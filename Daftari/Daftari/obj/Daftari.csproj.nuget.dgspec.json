@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj": {}
+    "E:\\Test\\New folder\\Daftari\\Daftari.csproj": {}
   },
   "projects": {
-    "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj": {
+    "E:\\Test\\New folder\\Daftari\\Daftari.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj",
+        "projectUniqueName": "E:\\Test\\New folder\\Daftari\\Daftari.csproj",
         "projectName": "Daftari",
-        "projectPath": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj",
+        "projectPath": "E:\\Test\\New folder\\Daftari\\Daftari.csproj",
         "packagesPath": "C:\\Users\\SaWa\\.nuget\\packages\\",
-        "outputPath": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\obj\\",
+        "outputPath": "E:\\Test\\New folder\\Daftari\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\SaWa\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -46,6 +46,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -68,7 +72,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.6.2, )"
+              "version": "[6.9.0, )"
             }
           },
           "imports": [

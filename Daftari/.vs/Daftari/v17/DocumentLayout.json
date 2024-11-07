@@ -1,34 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\",
+  "WorkspaceRootPath": "E:\\Test\\New folder\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\controllers\\valuescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\controllers\\valuescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\test\\new folder\\daftari\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\data\\daftaricontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\data\\daftaricontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\global\\utility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\global\\utility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\entities\\businesstype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\entities\\businesstype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\entities\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\entities\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\data\\settings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\data\\settings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\test\\new folder\\daftari\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,97 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Utility.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Global\\Utility.cs",
-              "RelativeDocumentMoniker": "Daftari\\Global\\Utility.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Global\\Utility.cs",
-              "RelativeToolTip": "Daftari\\Global\\Utility.cs",
-              "ViewState": "AQIAAAEAAADgMjMzMzMrwAMAAAARAAAA",
+              "DocumentIndex": 1,
+              "Title": "User.cs",
+              "DocumentMoniker": "E:\\Test\\New folder\\Daftari\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "Daftari\\Entities\\User.cs",
+              "ToolTip": "E:\\Test\\New folder\\Daftari\\Entities\\User.cs",
+              "RelativeToolTip": "Daftari\\Entities\\User.cs",
+              "ViewState": "AQIAABEAAAAA+v////8bwBkAAAAaAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T10:13:45.337Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BusinessType.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Entities\\BusinessType.cs",
-              "RelativeDocumentMoniker": "Daftari\\Entities\\BusinessType.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Entities\\BusinessType.cs",
-              "RelativeToolTip": "Daftari\\Entities\\BusinessType.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAARAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T10:25:42.337Z",
+              "WhenOpened": "2024-11-07T09:02:13.534Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ValuesController.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Controllers\\ValuesController.cs",
-              "RelativeDocumentMoniker": "Daftari\\Controllers\\ValuesController.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Controllers\\ValuesController.cs",
-              "RelativeToolTip": "Daftari\\Controllers\\ValuesController.cs",
-              "ViewState": "AQIAABAAAACAYmZmZmYGwBsAAAACAAAA",
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "E:\\Test\\New folder\\Daftari\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "Daftari\\Controllers\\UsersController.cs",
+              "ToolTip": "E:\\Test\\New folder\\Daftari\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "Daftari\\Controllers\\UsersController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAL8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T09:01:49.045Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Program.cs",
-              "RelativeDocumentMoniker": "Daftari\\Program.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Program.cs",
-              "RelativeToolTip": "Daftari\\Program.cs",
-              "ViewState": "AQIAAAsAAAAA8v///38XwBUAAAAjAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T08:57:08.422Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Settings.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Data\\Settings.cs",
-              "RelativeDocumentMoniker": "Daftari\\Data\\Settings.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Data\\Settings.cs",
-              "RelativeToolTip": "Daftari\\Data\\Settings.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAWAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T08:51:28.72Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "DaftariContext.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Data\\DaftariContext.cs",
-              "RelativeDocumentMoniker": "Daftari\\Data\\DaftariContext.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Data\\DaftariContext.cs",
-              "RelativeToolTip": "Daftari\\Data\\DaftariContext.cs",
-              "ViewState": "AQIAABAAAAAApczMzMz8vxgAAAAnAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T08:42:38.707Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Client.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Entities\\Client.cs",
-              "RelativeDocumentMoniker": "Daftari\\Entities\\Client.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Entities\\Client.cs",
-              "RelativeToolTip": "Daftari\\Entities\\Client.cs",
-              "ViewState": "AQIAAAEAAACwZmZmZiYwwAYAAAABAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T08:40:29.73Z",
+              "WhenOpened": "2024-11-06T21:47:12.905Z",
               "EditorCaption": ""
             }
           ]
