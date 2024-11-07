@@ -20,14 +20,14 @@ namespace Daftari.Controllers
 			_context = context;
 		}
 
-		//[HttpGet]
-		//public async Task<ActionResult> GetCountry([FromBody]  User userDot)
-		//{
-			
-		//}
-		
+		[HttpGet]
+		public async Task<ActionResult> GetSectores()
+		{
+			return Ok(await _context.Sectors.ToListAsync());
+		}
 
 
-		
+
+
 	}
 }

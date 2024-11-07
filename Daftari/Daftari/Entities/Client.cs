@@ -13,7 +13,7 @@ public partial class Client
 
     public string Notes { get; set; } = null!;
 
-    public DateOnly DateOfPayment { get; set; }
+    public virtual ICollection<ClientPaymentDate> ClientPaymentDates { get; set; } = new List<ClientPaymentDate>();
 
     public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
 

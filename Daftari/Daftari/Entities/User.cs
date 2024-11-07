@@ -15,7 +15,19 @@ public partial class User
 
     public string PasswordHash { get; set; } = null!;
 
-    public int SectorId { get; set; }
+    public byte SectorId { get; set; }
+
+    public string? RefreshToken { get; set; }
+
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+
+    public byte BusinessTypeId { get; set; }
+
+    public string UserType { get; set; } = null!;
+
+    public virtual BusinessType BusinessType { get; set; } = null!;
+
+    public virtual ICollection<ClientPaymentDate> ClientPaymentDates { get; set; } = new List<ClientPaymentDate>();
 
     public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
 
@@ -24,6 +36,10 @@ public partial class User
     public virtual Person Person { get; set; } = null!;
 
     public virtual Sector Sector { get; set; } = null!;
+
+    public virtual ICollection<SupplierPaymentDate> SupplierPaymentDates { get; set; } = new List<SupplierPaymentDate>();
+
+    public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
 
     public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 

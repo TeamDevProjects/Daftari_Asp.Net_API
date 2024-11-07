@@ -13,9 +13,11 @@ public partial class Supplier
 
     public string Notes { get; set; } = null!;
 
-    public DateOnly DateOfPayment { get; set; }
-
     public virtual Person Person { get; set; } = null!;
+
+    public virtual ICollection<SupplierPaymentDate> SupplierPaymentDates { get; set; } = new List<SupplierPaymentDate>();
+
+    public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
 
     public virtual User User { get; set; } = null!;
 }

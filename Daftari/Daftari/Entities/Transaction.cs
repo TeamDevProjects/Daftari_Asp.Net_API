@@ -21,6 +21,8 @@ public partial class Transaction
 
     public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
 
+    public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
+
     public virtual TransactionType? TransactionType { get; set; }
 
     public virtual ICollection<UserTransaction> UserTransactions { get; set; } = new List<UserTransaction>();
