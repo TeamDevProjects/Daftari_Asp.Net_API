@@ -288,3 +288,4 @@ E:\Test\New folder\Daftari\obj\Debug\net8.0\Daftari.pdb
 E:\Test\New folder\Daftari\obj\Debug\net8.0\Daftari.genruntimeconfig.cache
 E:\Test\New folder\Daftari\obj\Debug\net8.0\ref\Daftari.dll
 E:\Test\New folder\Daftari\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\Old_Computer\00-FullStack_DotNet_App\Daftari_Application\Daftari\Daftari\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

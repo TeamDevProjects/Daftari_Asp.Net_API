@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Test\\New folder\\Daftari\\Daftari.csproj": {}
+    "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj": {}
   },
   "projects": {
-    "E:\\Test\\New folder\\Daftari\\Daftari.csproj": {
+    "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Test\\New folder\\Daftari\\Daftari.csproj",
+        "projectUniqueName": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj",
         "projectName": "Daftari",
-        "projectPath": "E:\\Test\\New folder\\Daftari\\Daftari.csproj",
+        "projectPath": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Daftari.csproj",
         "packagesPath": "C:\\Users\\SaWa\\.nuget\\packages\\",
-        "outputPath": "E:\\Test\\New folder\\Daftari\\obj\\",
+        "outputPath": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\SaWa\\AppData\\Roaming\\NuGet\\NuGet.Config",

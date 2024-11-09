@@ -1,6 +1,8 @@
 ﻿
 using Daftari.Data;
 using Daftari.Helper;
+using Daftari.Services;
+using Daftari.Services.PaymentDateServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -74,6 +76,7 @@ namespace Daftari
 			});
 
 			builder.Services.AddScoped<JwtHelper>();
+			builder.Services.AddScoped<ClientPaymentDateService>();
 
 			builder.Services.AddAuthorization();
 			builder.Services.AddControllers();

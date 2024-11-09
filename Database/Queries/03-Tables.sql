@@ -1,6 +1,5 @@
 
-
-use Daftari2; 
+use Daftari3; 
 
 ---------------------------------
 --[         3 Tables        ]--
@@ -17,8 +16,8 @@ CREATE TABLE PaymentDates (
     PaymentDateId INT IDENTITY(1,1) NOT NULL,   
     PaymentDate DATE DEFAULT DATEADD(DAY, 30, GETDATE()) NOT NULL,                  
     Amount DECIMAL(18, 2) DEFAULT 0 NOT NULL,             
-    PaymentMethod NVARCHAR(50) default 1 NOT NULL,         
-    Notes NVARCHAR(500) NULL,        
+    PaymentMethodId TINYINT NOT NULL default 1 REFERENCES PaymentMethods(PaymentMethodId), 
+	Notes NVARCHAR(500) NULL,        
 	
     PRIMARY KEY (PaymentDateId)                  
 );
@@ -49,3 +48,7 @@ delete from People
 
 select * from People
 select * from Users
+select * from Suppliers
+select * from Clients
+
+ALTER TABLE Transactions ALTER COLUMN ImageData VARBINARY(MAX) NULL;

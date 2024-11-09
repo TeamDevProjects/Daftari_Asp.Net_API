@@ -1,19 +1,22 @@
-﻿using Daftari.Data;
+﻿using Daftari.Controllers.BaseControllers;
+using Daftari.Data;
+using Daftari.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Daftari.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class BusinessTypeController : ControllerBase
+	public class BusinessTypeController : BaseController
 	{
-		private readonly DaftariContext _context;
 
-		public BusinessTypeController(DaftariContext context)
+		public BusinessTypeController(DaftariContext context, JwtHelper jwtHelper)
+			: base(context, jwtHelper)
 		{
-			_context = context;
+
 		}
 
 		[HttpGet]

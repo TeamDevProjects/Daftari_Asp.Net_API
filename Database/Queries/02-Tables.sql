@@ -1,7 +1,7 @@
 ﻿
 
 
-use Daftari2; 
+use Daftari3; 
 
 ---------------------------------
 --[         2 Tables        ]--
@@ -22,7 +22,6 @@ Create Table BusinessTypes(
 
 	primary key(BusinessTypeId)
 )
-
 
 
 Create Table SectorTypes(
@@ -58,7 +57,7 @@ Create Table Transactions (
 	Notes nvarchar(500) NULL,
 	TransactionDate datetime default GETDATE() not null,
 	Amount decimal not null,
-	ImageData VarBinary(MAX) NOT NULL,
+	ImageData VarBinary(MAX)  NULL,
 	ImageType  NVARCHAR(10) Null CHECK (ImageType IN ('image/jpeg', 'image/png',NULL)),
 
 	primary key(TransactionId)
@@ -99,3 +98,4 @@ Create Table SupplierTransactions(
 	primary key(SupplierTransactionId)
 )
 
+select * from Transactions
