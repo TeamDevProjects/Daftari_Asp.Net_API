@@ -1,5 +1,5 @@
 
-use Daftari2; 
+use Daftari3; 
 
 ---------------------------------
 --[         1 Tables        ]--
@@ -26,10 +26,10 @@ CREATE TABLE Users (
     StoreName NVARCHAR(50) NOT NULL,
     UserName NVARCHAR(50) NOT NULL,
     PasswordHash NVARCHAR(250) NOT NULL,
-    SectorId TINYINT NOT NULL REFERENCES dbo.Sectors(SectorId),
+    SectorId TINYINT NOT NULL REFERENCES Sectors(SectorId),
     RefreshToken NVARCHAR(255) DEFAULT ('') NULL,
     RefreshTokenExpiryTime DATETIME DEFAULT (GETDATE()) NULL,
-    BusinessTypeId TINYINT NOT NULL REFERENCES dbo.BusinessTypes(BusinessTypeId),
+    BusinessTypeId TINYINT NOT NULL REFERENCES BusinessTypes(BusinessTypeId),
     UserType NVARCHAR(50) DEFAULT ('user') NOT NULL,
     PRIMARY KEY (UserId)
 );

@@ -1,6 +1,7 @@
-﻿using Daftari.Data;
-using Daftari.Dtos.Person;
-using Daftari.Dtos.User;
+﻿using Daftari.Controllers.BaseControllers;
+using Daftari.Data;
+using Daftari.Dtos.People.Person;
+using Daftari.Dtos.People.User;
 using Daftari.Entities;
 using Daftari.Helper;
 using Microsoft.AspNetCore.Authorization;
@@ -9,46 +10,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
-	public class UsersController : ControllerBase
+	public class UsersController : BasePersonController
 	{
 
-		private readonly DaftariContext _context;
-		private readonly JwtHelper _jwtHelper;
-
 		public UsersController(DaftariContext context, JwtHelper jwtHelper)
+			:base(context, jwtHelper)
 		{
-			_context = context;
-			_jwtHelper = jwtHelper;
+			
 		}
+
 
 		[Authorize(Roles = "admin")]
 		[HttpGet]
-		public async Task<ActionResult> GetSectores()
+		public async Task<ActionResult> GetUsers()
 		{
 			return Ok(await _context.Users.ToListAsync());
 		}
 
-		private async Task<Person> CreatePerson(PersonCreateDto personData)
-		{
-
-			// create Person
-			var newPerson = new Person
-			{
-				Name = personData.Name,
-				Phone = personData.Phone,
-				City = personData.City,
-				Country = personData.Country,
-				Address = personData.Address,
-			};
-
-
-			await _context.People.AddAsync(newPerson);
-			await _context.SaveChangesAsync();
-
-			return newPerson;
-		}
 
 		[HttpPost("signup")]
 		public async Task<IActionResult> Register([FromBody] UserCreateDto userData)
@@ -132,79 +112,11 @@ namespace Daftari.Controllers
 			//EidAhmed => user
 		}
 
-
-
-		[HttpPost("client")]
-		public async Task<IActionResult> PostUserClient([FromBody] UserCreateDto userData)
-		{
-			if (_context.Users.Any(u => u.UserName == userData.UserName))
-				return BadRequest("Username already exists.");
-
-			using var transaction = await _context.Database.BeginTransactionAsync();
-
-			try
-			{
-
-				// create Person
-				var newPerson = await CreatePerson(new PersonCreateDto
-				{
-					Name = userData.Name,
-					Phone = userData.Phone,
-					City = userData.City,
-					Country = userData.Country,
-					Address = userData.Address,
-				});
-
-				if (newPerson.PersonId == 0)
-				{
-					return Conflict("can`t add this Person");
-				}
-
-				// create User
-				var newUser = new User
-				{
-					UserName = userData.UserName,
-					PasswordHash = PasswordHelper.HashingPassword(userData.PasswordHash),
-					PersonId = newPerson.PersonId,
-					SectorId = userData.SectorId,
-					BusinessTypeId = userData.BusinessTypeId,
-					StoreName = userData.StoreName,
-					UserType = userData.UserType,
-				};
-
-				_context.Users.Add(newUser);
-				await _context.SaveChangesAsync();
-
-				// Commit the transaction if both operations succeed
-				await transaction.CommitAsync();
-
-				return Ok("User registered successfully.");
-			}
-			catch (Exception ex)
-			{
-				// Rollback the transaction if any error occurs
-				await transaction.RollbackAsync();
-
-				// Return an error response with the exception details
-				return StatusCode(500, new { error = "An error occurred while creating the user and person.", details = ex.Message });
-			}
-		}
-
-
+		// Update
+		// Delete
+		// Get
 
 		[Authorize]
-		[HttpGet("private-data")]
-		public IActionResult GetPrivateData()
-		{
-			return Ok("هذه بيانات خاصة بالمستخدم المسجل.");
-		}
-
-		[HttpGet("public-data")]
-		public IActionResult GetPublicData()
-		{
-			return Ok("هذه بيانات متاحة للجميع.");
-		}
-
 		[HttpPost("refresh-token")]
 		public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
 		{

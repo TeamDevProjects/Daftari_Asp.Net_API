@@ -129,14 +129,22 @@ public partial class DaftariContext : DbContext
 		{
 			entity.HasKey(e => e.PaymentDateId).HasName("PK__PaymentD__E842F4545C4B690E");
 
-			entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+			entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
 			entity.Property(e => e.Notes).HasMaxLength(500);
 			entity.Property(e => e.PaymentDate1)
 				.HasDefaultValueSql("(dateadd(day,(30),getdate()))")
 				.HasColumnName("PaymentDate");
-			entity.Property(e => e.PaymentMethod)
-				.HasMaxLength(50)
-				.HasDefaultValueSql("((1))");
+
+			entity.Property(p => p.PaymentMethodId)
+			.HasDefaultValue((byte)1);
+
+			entity.HasOne(p => p.PaymentMethod)
+		   .WithMany(pm => pm.PaymentDates)
+		   .HasForeignKey(p => p.PaymentMethodId)
+		   .OnDelete(DeleteBehavior.Restrict)
+		   .HasConstraintName("FK_PaymentDates_PaymentMethods");
+
+			
 		});
 
 		modelBuilder.Entity<PaymentMethod>(entity =>
@@ -249,6 +257,11 @@ public partial class DaftariContext : DbContext
 			entity.Property(e => e.TransactionDate)
 				.HasDefaultValueSql("(getdate())")
 				.HasColumnType("datetime");
+
+			// إضافة إعدادات ImageData
+			entity.Property(e => e.ImageData)
+				.HasColumnType("varbinary(max)")
+				.IsRequired(false); // السماح بالقيم الفارغة
 
 			entity.HasOne(d => d.TransactionType).WithMany(p => p.Transactions)
 				.HasForeignKey(d => d.TransactionTypeId)

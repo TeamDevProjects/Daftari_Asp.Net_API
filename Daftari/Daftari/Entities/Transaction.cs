@@ -15,7 +15,7 @@ public partial class Transaction
 
     public decimal Amount { get; set; }
 
-    public byte[] ImageData { get; set; } = null!;
+    public byte[]? ImageData { get; set; } = null!;
 
     public string? ImageType { get; set; }
 
