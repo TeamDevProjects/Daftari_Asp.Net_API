@@ -75,8 +75,11 @@ namespace Daftari
 				});
 			});
 
+
+
 			builder.Services.AddScoped<JwtHelper>();
 			builder.Services.AddScoped<ClientPaymentDateService>();
+			builder.Services.AddScoped<SupplierPaymentDateService>();
 
 			builder.Services.AddAuthorization();
 			builder.Services.AddControllers();

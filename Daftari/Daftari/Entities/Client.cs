@@ -16,6 +16,8 @@ public partial class Client
     public virtual ICollection<ClientPaymentDate> ClientPaymentDates { get; set; } = new List<ClientPaymentDate>();
 
     public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
+    
+    public virtual ICollection<ClientTotalAmount> ClientTotalAmounts { get; set; } = new List<ClientTotalAmount>();
 
     public virtual Person Person { get; set; } = null!;
 

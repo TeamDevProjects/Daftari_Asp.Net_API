@@ -49,6 +49,12 @@ public partial class DaftariContext : DbContext
 
 	public virtual DbSet<UserTransaction> UserTransactions { get; set; }
 
+	public DbSet<ClientTotalAmount> ClientTotalAmounts { get; set; }
+	
+	public DbSet<SupplierTotalAmount> SupplierTotalAmounts { get; set; }
+
+	public DbSet<UserTotalAmount> UserTotalAmounts { get; set; }
+
 
 	public virtual DbSet<SectorsView> SectorsViews { get; set; }
 
@@ -131,9 +137,9 @@ public partial class DaftariContext : DbContext
 
 			entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
 			entity.Property(e => e.Notes).HasMaxLength(500);
-			entity.Property(e => e.PaymentDate1)
+			entity.Property(e => e.DateOfPayment)
 				.HasDefaultValueSql("(dateadd(day,(30),getdate()))")
-				.HasColumnName("PaymentDate");
+				.HasColumnName("DateOfPayment");
 
 			entity.Property(p => p.PaymentMethodId)
 			.HasDefaultValue((byte)1);
@@ -324,6 +330,47 @@ public partial class DaftariContext : DbContext
 				.HasForeignKey(d => d.UserId)
 				.OnDelete(DeleteBehavior.ClientSetNull)
 				.HasConstraintName("FK__UserTrans__UserI__66603565");
+		});
+
+		modelBuilder.Entity<ClientTotalAmount>(entity =>
+		{
+			entity.HasKey(e => e.ClientTotalAmountId);
+
+			entity.HasOne(e => e.Client)
+				.WithMany(p => p.ClientTotalAmounts) // Ensure this is consistent with your `Client` model
+				.HasForeignKey(e => e.ClientId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			entity.HasOne(e => e.User)
+				.WithMany(p => p.ClientTotalAmounts) // Ensure this is consistent with your `User` model
+				.HasForeignKey(e => e.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+		});
+
+
+		modelBuilder.Entity<SupplierTotalAmount>(entity =>
+		{
+			entity.HasKey(e => e.SupplierTotalAmountId);
+
+			entity.HasOne(e => e.Supplier)
+				.WithMany(p => p.SupplierTotalAmounts) // Ensure this matches your model structure
+				.HasForeignKey(e => e.SupplierId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			entity.HasOne(e => e.User)
+				.WithMany(p => p.SupplierTotalAmounts) // Ensure this matches your model structure
+				.HasForeignKey(e => e.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+		});
+
+		modelBuilder.Entity<UserTotalAmount>(entity =>
+		{
+			entity.HasKey(e => e.UserTotalAmountId);
+
+			entity.HasOne(e => e.User)
+				.WithMany(p => p.UserTotalAmounts) // Ensure this matches your model structure
+				.HasForeignKey(e => e.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
 		});
 
 

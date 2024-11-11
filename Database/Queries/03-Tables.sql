@@ -14,9 +14,9 @@ CREATE TABLE PaymentMethods (
 
 CREATE TABLE PaymentDates (
     PaymentDateId INT IDENTITY(1,1) NOT NULL,   
-    PaymentDate DATE DEFAULT DATEADD(DAY, 30, GETDATE()) NOT NULL,                  
-    Amount DECIMAL(18, 2) DEFAULT 0 NOT NULL,             
-    PaymentMethodId TINYINT NOT NULL default 1 REFERENCES PaymentMethods(PaymentMethodId), 
+    DateOfPayment DATE DEFAULT DATEADD(DAY, 30, GETDATE()) NOT NULL,                  
+    TotalAmount DECIMAL(18, 2) DEFAULT 0 NOT NULL,             
+    PaymentMethodId TINYINT NOT NULL default 1 REFERENCES PaymentMethods(PaymentMethodId), -- cash
 	Notes NVARCHAR(500) NULL,        
 	
     PRIMARY KEY (PaymentDateId)                  
@@ -40,15 +40,56 @@ CREATE TABLE ClientPaymentDates (
     PRIMARY KEY (ClientPaymentDateId),              
 );
 
+
+CREATE TABLE ClientTotalAmounts (
+    ClientTotalAmountId INT IDENTITY(1,1) NOT NULL,   
+    ClientId INT REFERENCES Clients(ClientId) NOT NULL, 
+	UserId INT REFERENCES Users(UserId) NOT NULL,                              
+    TotalAmount DECIMAL(18, 2) DEFAULT 0 NOT NULL,             
+    UpdateAt DATE DEFAULT GETDATE() NOT NULL,                  
+	
+    PRIMARY KEY (ClientTotalAmountId)                  
+);
+
+
+CREATE TABLE SupplierTotalAmounts (
+    SupplierTotalAmountId INT IDENTITY(1,1) NOT NULL,   
+    SupplierId INT REFERENCES Suppliers(SupplierId) NOT NULL,                          
+	UserId INT REFERENCES Users(UserId) NOT NULL,                              
+    TotalAmount DECIMAL(18, 2) DEFAULT 0 NOT NULL,             
+    UpdateAt DATE DEFAULT GETDATE() NOT NULL,                  
+	
+    PRIMARY KEY (SupplierTotalAmountId)                  
+);
+
+CREATE TABLE UserTotalAmounts (
+    UserTotalAmountId INT IDENTITY(1,1) NOT NULL,   
+	UserId INT REFERENCES Users(UserId) NOT NULL,                              
+    TotalAmount DECIMAL(18, 2) DEFAULT 0 NOT NULL,             
+    UpdateAt DATE DEFAULT GETDATE() NOT NULL,                  
+	
+    PRIMARY KEY (UserTotalAmountId)                  
+);
+
+
 -------------------
 -- Scaffold-DbContext "Server=.;Database=Daftari;User Id=sa;Password=sa123456;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -Tables Users -Force
 
 
-delete from People
 
 select * from People
 select * from Users
 select * from Suppliers
 select * from Clients
 
-ALTER TABLE Transactions ALTER COLUMN ImageData VARBINARY(MAX) NULL;
+select * from ClientTransactions
+select * from ClientTotalAmounts
+select * from SupplierTransactions
+select * from SupplierTotalAmounts
+
+select * from Transactions
+select * from UserTransactions
+select * from UserTotalAmounts
+
+select * from PaymentDates
+select * from ClientPaymentDates

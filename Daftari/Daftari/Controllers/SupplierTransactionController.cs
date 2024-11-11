@@ -1,11 +1,13 @@
 ﻿using Daftari.Controllers.BaseControllers;
 using Daftari.Data;
-using Daftari.Dtos.People.Person;
-using Daftari.Dtos.People.Supplier;
+using Daftari.Dtos.PaymentDates;
 using Daftari.Dtos.Transactions;
 using Daftari.Entities;
 using Daftari.Helper;
+using Daftari.Services.Images;
+using Daftari.Services.PaymentDateServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Controllers
 {
@@ -13,10 +15,12 @@ namespace Daftari.Controllers
 	[ApiController]
 	public class SupplierTransactionController : BaseTransactionController
 	{
-		public SupplierTransactionController(DaftariContext context, JwtHelper jwtHelper)
+		private readonly SupplierPaymentDateService _supplierPaymentDateService;
+
+		public SupplierTransactionController(DaftariContext context, JwtHelper jwtHelper, SupplierPaymentDateService supplierPaymentDateService)
 			: base(context, jwtHelper)
 		{
-
+			_supplierPaymentDateService = supplierPaymentDateService;
 		}
 
 
@@ -27,42 +31,99 @@ namespace Daftari.Controllers
 
 
 
-		[HttpPost]
-		public async Task<IActionResult> CreateTransaction([FromForm] SupplierTransactionCreateDto supplierTransactionData)
+		private async Task<decimal> SaveSupplierTotalAmount(SupplierTransactionCreateDto SupplierTransactionData, int userId)
 		{
-			if (supplierTransactionData.FormImage != null)
+			decimal totalAmount = SupplierTransactionData.Amount;
+
+			try
 			{
-				try
+				var existSupplierTotalAmount = await _context.SupplierTotalAmounts
+					.FirstOrDefaultAsync(c => c.SupplierId == SupplierTransactionData.SupplierId && c.UserId == userId);
+
+				if (existSupplierTotalAmount == null)
 				{
-					long fileSizeLimit = 10 * 1024 * 1024; // 10 MB size limit
-					if (supplierTransactionData.FormImage.Length > fileSizeLimit)
+					totalAmount = SupplierTransactionData.Amount;
+					// Create new Client TotalAmount
+					var newSupplierTotalAmount = new SupplierTotalAmount
 					{
-						return BadRequest("File size exceeds the allowed limit.");
+						UpdateAt = DateTime.UtcNow,
+						SupplierId = SupplierTransactionData.SupplierId,
+						UserId = userId,
+						TotalAmount = totalAmount
+					};
+
+					await _context.SupplierTotalAmounts.AddAsync(newSupplierTotalAmount);
+					await _context.SaveChangesAsync();
+				}
+				else
+				{
+					if (SupplierTransactionData.TransactionTypeId == 1)
+					{
+						totalAmount = existSupplierTotalAmount.TotalAmount - SupplierTransactionData.Amount;
+
+						existSupplierTotalAmount.TotalAmount = totalAmount;
+					}
+					else if (SupplierTransactionData.TransactionTypeId == 2)
+					{
+						totalAmount = existSupplierTotalAmount.TotalAmount + SupplierTransactionData.Amount;
+
+						existSupplierTotalAmount.TotalAmount = totalAmount;
 					}
 
-					using (var memoryStream = new MemoryStream())
-					{
-						await supplierTransactionData.FormImage.CopyToAsync(memoryStream);
-						supplierTransactionData.ImageData = memoryStream.ToArray();  // Convert to byte array
-						supplierTransactionData.ImageType = supplierTransactionData.FormImage.ContentType;  // Set MediaType from the file
-					}
-				}
-				catch (Exception ex)
-				{
-					// Log the exception (e.g., using a logging framework)
-					return BadRequest($"File upload failed: {ex.Message}");
+					existSupplierTotalAmount.UpdateAt = DateTime.UtcNow; // Update timestamp
+
+					_context.SupplierTotalAmounts.Update(existSupplierTotalAmount);
+					await _context.SaveChangesAsync();
+
 				}
 			}
-
-			// Check if MediaData is still null and set MediaType to "None"
-			if (supplierTransactionData.ImageData == null) supplierTransactionData.ImageType = "None";
-
-			// Validate MediaType if necessary
-			var validMediaTypes = new[] { "image/jpeg", "image/png", "None" };
-			if (!validMediaTypes.Contains(supplierTransactionData.ImageType))
+			catch (Exception ex)
 			{
-				return BadRequest("Invalid media type. Only specific file types are allowed.");
+				// Log the exception here, if necessary
+				throw;
 			}
+
+			return totalAmount;
+		}
+
+		private async Task SaveSupplierPaymentDate(int supplierId, int userId, decimal totalAmount)
+		{
+			try
+			{
+				var existSupplierPaymenttDate = await _context.SupplierPaymentDates
+					.FirstOrDefaultAsync(c => c.SupplierId == supplierId && c.UserId == userId);
+
+				if (existSupplierPaymenttDate == null)
+				{
+
+					await _supplierPaymentDateService.CreateSupplierPaymentDateAsync(
+						new SupplierPaymentDateCreateDto
+						{
+							DateOfPayment = DateTime.UtcNow.AddDays(20),
+							TotalAmount = totalAmount,
+							PaymentMethodId = 1,
+							Notes = "this PaymentDate is added by default after 20 days from the first transaction",
+							UserId = userId,
+							SupplierId = supplierId
+						});
+				}
+				else
+				{
+					await _supplierPaymentDateService.UpdatePaymentDateTotalAmountAsync(existSupplierPaymenttDate.PaymentDateId, totalAmount);
+				}
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+
+
+		[HttpPost]
+		public async Task<IActionResult> CreateSupplierTransaction([FromForm] SupplierTransactionCreateDto SupplierTransactionData)
+		{
+			// Handel Uploading Image
+			var ImageObj = await ImageServices.HandelImageServices(SupplierTransactionData.FormImage!);
+
+			SupplierTransactionData.ImageData = ImageObj.ImageData;
+			SupplierTransactionData.ImageType = ImageObj.ImageType;
 
 			// Get UserId from header request from token
 			var userId = GetUserIdFromToken();
@@ -78,38 +139,42 @@ namespace Daftari.Controllers
 			{
 
 				// create Base Transaction
-				var newTransactionObj = await CreateTransactionAsync(new Transaction
-				{
-					TransactionTypeId = supplierTransactionData.TransactionTypeId,
-					Notes = supplierTransactionData.Notes,
-					TransactionDate = DateTime.Now,
-					Amount = supplierTransactionData.Amount,
-					ImageData = supplierTransactionData.ImageData!,
-					ImageType = supplierTransactionData.ImageType,
-				});
+				var newTransactionObj = await CreateTransactionAsync(
+					new Transaction
+					{
+						TransactionTypeId = SupplierTransactionData.TransactionTypeId,
+						Notes = SupplierTransactionData.Notes,
+						TransactionDate = DateTime.Now,
+						Amount = SupplierTransactionData.Amount,
+						ImageData = SupplierTransactionData.ImageData,
+						ImageType = SupplierTransactionData.ImageType,
 
-				if (newTransactionObj != null)
+					});
+
+				if (newTransactionObj == null)
 				{
-					return BadRequest("can not add Supplier Transaction");
+					return BadRequest("can not add Transaction");
 				}
 
+				// => HandleTotalAmount
+				var totalAmount = await SaveSupplierTotalAmount(SupplierTransactionData, userId);
+
+				// craete Client Transaction
 				var newSupplierTransactionObj = new SupplierTransaction
 				{
 					TransactionId = newTransactionObj!.TransactionId,
 					UserId = userId,
-					SupplierId = supplierTransactionData.SupplierId,
-					TotalAmount = supplierTransactionData.Amount
+					SupplierId = SupplierTransactionData.SupplierId,
+					TotalAmount = totalAmount
 
 				};
 
-				_context.SupplierTransactions.Add(newSupplierTransactionObj);
+				 _context.SupplierTransactions.Add(newSupplierTransactionObj);
 				await _context.SaveChangesAsync();
 
-				// try get isexist null => add, true => update
-				// Add/Update Default ClientPaymentDate 
-				//  dont update the date (dont add it)
 
-
+				// Default PaymentDate add in firsy time or just update totalAmount
+				await SaveSupplierPaymentDate(SupplierTransactionData.SupplierId, userId, totalAmount);
 
 				await transaction.CommitAsync();
 				return Ok("Supplier Transaction Created Succfuly");

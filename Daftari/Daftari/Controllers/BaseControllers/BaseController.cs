@@ -16,6 +16,18 @@ namespace Daftari.Controllers.BaseControllers
 			_jwtHelper = jwtHelper;
 		}
 
-		
+		protected int GetUserIdFromToken()
+		{
+			var userId = User.FindFirst("UserId")!.Value;
+
+			if (userId == null) 
+			{
+				return -1;
+			}
+
+			return int.Parse(userId);
+		}
+
+
 	}
 }

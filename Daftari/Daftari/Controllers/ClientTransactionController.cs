@@ -1,14 +1,15 @@
 ﻿using Daftari.Controllers.BaseControllers;
 using Daftari.Data;
 using Daftari.Dtos.PaymentDates;
-using Daftari.Dtos.People.Supplier;
 using Daftari.Dtos.Transactions;
 using Daftari.Entities;
 using Daftari.Helper;
+using Daftari.Services.Images;
 using Daftari.Services.PaymentDateServices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using static Azure.Core.HttpHeader;
 
 namespace Daftari.Controllers
@@ -31,46 +32,100 @@ namespace Daftari.Controllers
 		// Update  
 		// Delete  
 		// Get => view
-
-
-
-
-		[HttpPost]
-		public async Task<IActionResult> CreateTransaction([FromForm] ClientTransactionCreateDto clientTransactionData)
+		
+		private async Task<decimal> SaveClientTotalAmount(ClientTransactionCreateDto clientTransactionData, int userId)
 		{
-			if (clientTransactionData.FormImage != null)
+			decimal totalAmount = clientTransactionData.Amount;
+
+			try
 			{
-				try
+				var existClientTotalAmount = await _context.ClientTotalAmounts
+					.FirstOrDefaultAsync(c => c.ClientId == clientTransactionData.ClientId && c.UserId == userId);
+
+				if (existClientTotalAmount == null)
 				{
-					long fileSizeLimit = 10 * 1024 * 1024; // 10 MB size limit
-					if (clientTransactionData.FormImage.Length > fileSizeLimit)
+					totalAmount = clientTransactionData.Amount;
+					// Create new Client TotalAmount
+					var newClientTotalAmount = new ClientTotalAmount
 					{
-						return BadRequest("File size exceeds the allowed limit.");
+						UpdateAt = DateTime.UtcNow,
+						ClientId = clientTransactionData.ClientId,
+						UserId = userId,
+						TotalAmount = totalAmount
+					};
+
+					await _context.ClientTotalAmounts.AddAsync(newClientTotalAmount);
+					await _context.SaveChangesAsync();
+				}
+				else
+				{
+					if (clientTransactionData.TransactionTypeId == 1)
+					{
+						totalAmount = existClientTotalAmount.TotalAmount - clientTransactionData.Amount;
+
+						existClientTotalAmount.TotalAmount = totalAmount;
+					}
+					else if (clientTransactionData.TransactionTypeId == 2)
+					{
+						totalAmount = existClientTotalAmount.TotalAmount + clientTransactionData.Amount;
+
+						existClientTotalAmount.TotalAmount = totalAmount;
 					}
 
-					using (var memoryStream = new MemoryStream())
-					{
-						await clientTransactionData.FormImage.CopyToAsync(memoryStream);
-						clientTransactionData.ImageData = memoryStream.ToArray();  // Convert to byte array
-						clientTransactionData.ImageType = clientTransactionData.FormImage.ContentType;  // Set MediaType from the file
-					}
-				}
-				catch (Exception ex)
-				{
-					// Log the exception (e.g., using a logging framework)
-					return BadRequest($"File upload failed: {ex.Message}");
+					existClientTotalAmount.UpdateAt = DateTime.UtcNow; // Update timestamp
+
+					_context.ClientTotalAmounts.Update(existClientTotalAmount);
+					await _context.SaveChangesAsync();
+					
 				}
 			}
-
-			// Check if MediaData is still null and set MediaType to "None"
-			if (clientTransactionData.ImageData == null) clientTransactionData.ImageType = null;
-
-			// Validate MediaType if necessary
-			var validMediaTypes = new[] { "image/jpeg", "image/png", null };
-			if (!validMediaTypes.Contains(clientTransactionData.ImageType))
+			catch (Exception ex)
 			{
-				return BadRequest("Invalid media type. Only specific file types are allowed.");
+				// Log the exception here, if necessary
+				throw;
 			}
+
+			return totalAmount;
+		}
+
+		private async Task SaveClientPaymentDate(int clientId, int userId, decimal totalAmount)
+		{
+			try
+			{
+				var existClientPaymentDate = await _context.ClientPaymentDates
+					.FirstOrDefaultAsync(c => c.ClientId == clientId && c.UserId == userId);
+
+				if (existClientPaymentDate == null)
+				{
+
+					await _clientPaymentDateService.CreateClientPaymentDateAsync(
+						new ClientPaymentDateCreateDto
+					{
+						DateOfPayment = DateTime.UtcNow.AddDays(20),
+						TotalAmount = totalAmount,
+						PaymentMethodId = 1,
+						Notes = "this PaymentDate is added by default after 20 days from the first transaction",
+						UserId = userId,
+						ClientId = clientId
+					});
+				}
+				else
+				{
+					await _clientPaymentDateService.UpdatePaymentDateTotalAmountAsync(existClientPaymentDate.PaymentDateId, totalAmount);
+				}
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+		
+		
+		[HttpPost]
+		public async Task<IActionResult> CreateClientTransaction([FromForm] ClientTransactionCreateDto clientTransactionData)
+		{
+			// Handel Uploading Image
+			var ImageObj = await ImageServices.HandelImageServices(clientTransactionData.FormImage!);
+
+			clientTransactionData.ImageData = ImageObj.ImageData;
+			clientTransactionData.ImageType = ImageObj.ImageType;
 
 			// Get UserId from header request from token
 			var userId = GetUserIdFromToken();
@@ -103,53 +158,25 @@ namespace Daftari.Controllers
 					return BadRequest("can not add Transaction");
 				}
 
-
+				// => HandleTotalAmount
+				var totalAmount = await SaveClientTotalAmount(clientTransactionData,userId);
+				
 				// craete Client Transaction
 				var newClientTransactionObj = new ClientTransaction
 				{
 					TransactionId = newTransactionObj!.TransactionId,
 					UserId = userId,
 					ClientId = clientTransactionData.ClientId,
-					TotalAmount= clientTransactionData.Amount
+					TotalAmount= totalAmount
 
 				};
 
 				_context.ClientTransactions.Add(newClientTransactionObj);
 				await _context.SaveChangesAsync();
 
-				// Add/Update Default ClientPaymentDate 
-				
-				//  dont update the date (dont add it)
-				//var d = await _context.
-				//decimal totalAmount = 0;
-				//if (clientTransactionData.TransactionTypeId == 1)
-				//{
-				//	totalAmount += clientTransactionData.Amount;
-				//}
-				//else if (clientTransactionData.TransactionTypeId == 2)
-				//{
-				//	totalAmount -= clientTransactionData.Amount;
 
-				//}
-				//if (await _clientPaymentDateService.GetClientPaymentDateAsync(clientTransactionData.ClientId) == null)
-				//{
-
-				//	var p = await _clientPaymentDateService.CreateClientPaymentDateAsync(new ClientPaymentDateCreateDto
-				//	{
-				//		PaymentDate1 = DateTime.UtcNow.AddDays(7),
-				//		TotalAmount  = 0,
-				//		PaymentMethodId = 1,
-				//		Notes="",
-				//		UserId = 1,
-				//		ClientId = 2
-
-				//	});
-				//}
-				//else
-				//{
-				//	// update exist one
-				//}
-
+				// Default PaymentDate add in firsy time or just update totalAmount
+				await SaveClientPaymentDate(clientTransactionData.ClientId, userId, totalAmount);
 
 
 				await transaction.CommitAsync();
@@ -162,6 +189,34 @@ namespace Daftari.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
 		}
+
+
+
+
+
+		// POST
+		// Add/Update Default ClientPaymentDate 
+
+		//  dont update the date (dont add it)
+		//if (await _clientPaymentDateService.GetClientPaymentDateAsync(clientTransactionData.ClientId) == null)
+		//{
+
+		//	var p = await _clientPaymentDateService.CreateClientPaymentDateAsync(new ClientPaymentDateCreateDto
+		//	{
+		//		PaymentDate1 = DateTime.UtcNow.AddDays(7),
+		//		TotalAmount  = 0,
+		//		PaymentMethodId = 1,
+		//		Notes="",
+		//		UserId = 1,
+		//		ClientId = 2
+
+		//	});
+		//}
+		//else
+		//{
+		//	// update exist one
+		//}
+
 
 
 	}
