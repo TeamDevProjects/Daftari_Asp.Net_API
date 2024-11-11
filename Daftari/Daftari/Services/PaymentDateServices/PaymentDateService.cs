@@ -20,13 +20,14 @@ namespace Daftari.Services.PaymentDateServices
 				// add PaymentDate
 				var paymentDate = new PaymentDate
 				{
-					PaymentDate1 = service.PaymentDate1,
+					DateOfPayment = service.DateOfPayment,
 					TotalAmount = service.TotalAmount,  // calcu
 					PaymentMethodId = service.PaymentMethodId,
 					Notes = service.Notes,
 				};
 
 				await _context.PaymentDates.AddAsync(paymentDate);
+				await _context.SaveChangesAsync();
 
 				return paymentDate;
 			}
@@ -36,6 +37,20 @@ namespace Daftari.Services.PaymentDateServices
 
 			}
 
+		}
+		public async Task<PaymentDate> UpdatePaymentDateTotalAmountAsync(int paymentDateId, decimal totalAmount)
+		{
+			var existPaymentDate = await _context.PaymentDates.FindAsync(paymentDateId);
+
+			if (existPaymentDate == null) 
+			{
+				throw new Exception($"paymentDateId {paymentDateId} not found");
+			}
+
+			existPaymentDate!.TotalAmount = totalAmount;	
+			await _context.SaveChangesAsync();
+
+			return existPaymentDate;
 		}
 	}
 }

@@ -18,6 +18,8 @@ public partial class Supplier
     public virtual ICollection<SupplierPaymentDate> SupplierPaymentDates { get; set; } = new List<SupplierPaymentDate>();
 
     public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
+   
+    public virtual ICollection<SupplierTotalAmount> SupplierTotalAmounts { get; set; } = new List<SupplierTotalAmount>();
 
     public virtual User User { get; set; } = null!;
 }

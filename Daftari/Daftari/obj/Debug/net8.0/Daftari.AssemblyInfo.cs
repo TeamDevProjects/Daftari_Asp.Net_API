@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Daftari")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+50dcbd8cf2556a8d1535cd136ddc581615a9ec48")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6401779620b8529829be0278e2804dcde60cd832")]
 [assembly: System.Reflection.AssemblyProductAttribute("Daftari")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Daftari")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

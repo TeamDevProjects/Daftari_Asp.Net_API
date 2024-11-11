@@ -17,15 +17,14 @@ namespace Daftari.Services.PaymentDateServices
 			{
 				throw new ArgumentNullException(nameof(clientPaymentDateData));
 			}
-			var transaction = _context.Database.BeginTransaction();
 
 			try
 			{
 
 				// add PaymentDate
-				var paymentDate = CreatePaymentDateService(new PaymentDate
+				var paymentDate = await CreatePaymentDateService(new PaymentDate
 				{
-					PaymentDate1 = clientPaymentDateData.PaymentDate1,
+					DateOfPayment = clientPaymentDateData.DateOfPayment,
 					TotalAmount = clientPaymentDateData.TotalAmount,  // calcu
 					PaymentMethodId = clientPaymentDateData.PaymentMethodId,
 					Notes = clientPaymentDateData.Notes,
@@ -35,6 +34,7 @@ namespace Daftari.Services.PaymentDateServices
 				// add ClientPaymentDates
 				var clientPaymentDate = new ClientPaymentDate
 				{
+					PaymentDateId = paymentDate.PaymentDateId,
 					UserId = clientPaymentDateData.UserId,
 					ClientId = clientPaymentDateData.ClientId,
 
@@ -42,13 +42,11 @@ namespace Daftari.Services.PaymentDateServices
 				await _context.ClientPaymentDates.AddAsync(clientPaymentDate);
 				await _context.SaveChangesAsync();
 
-				await transaction.CommitAsync();
 
 				return clientPaymentDate;
 			}
 			catch (Exception ex) 
 			{
-				await transaction.RollbackAsync();
 				throw ex;
 			}
 		}
@@ -73,5 +71,9 @@ namespace Daftari.Services.PaymentDateServices
 			}
 
 		}
+
+		
+
+
 	}
 }

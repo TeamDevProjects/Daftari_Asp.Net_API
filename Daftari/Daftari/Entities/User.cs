@@ -30,8 +30,12 @@ public partial class User
     public virtual ICollection<ClientPaymentDate> ClientPaymentDates { get; set; } = new List<ClientPaymentDate>();
 
     public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
+   
+    public virtual ICollection<ClientTotalAmount> ClientTotalAmounts { get; set; } = new List<ClientTotalAmount>();
 
-    public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
+	public virtual ICollection<UserTotalAmount> UserTotalAmounts { get; set; } = new List<UserTotalAmount>();
+
+	public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
 
     public virtual Person Person { get; set; } = null!;
 
@@ -40,6 +44,8 @@ public partial class User
     public virtual ICollection<SupplierPaymentDate> SupplierPaymentDates { get; set; } = new List<SupplierPaymentDate>();
 
     public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
+   
+    public virtual ICollection<SupplierTotalAmount> SupplierTotalAmounts { get; set; } = new List<SupplierTotalAmount>();
 
     public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 
