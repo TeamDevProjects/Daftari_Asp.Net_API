@@ -4,6 +4,7 @@ using Daftari.Dtos.Transactions;
 using Daftari.Entities;
 using Daftari.Helper;
 using Daftari.Services.Images;
+using Daftari.Services.TotalAmountServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +12,13 @@ namespace Daftari.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class UserTransactionController : BaseTransactionController
+	public class UserTransactionsController : BaseTransactionsController
 	{
-
-		public UserTransactionController(DaftariContext context, JwtHelper jwtHelper)
+		private readonly UserTotalAmountService _userTotalAmountService;
+		public UserTransactionsController(DaftariContext context, JwtHelper jwtHelper , UserTotalAmountService userTotalAmountService)
 			: base(context, jwtHelper)
 		{
+			_userTotalAmountService = userTotalAmountService;
 		}
 
 
@@ -25,60 +27,7 @@ namespace Daftari.Controllers
 		// Delete  
 		// Get => view
 
-		private async Task<decimal> SaveUserTotalAmount(UserTransactionCreateDto userTransactionData, int userId)
-		{
-			decimal totalAmount = userTransactionData.Amount;
-
-			try
-			{
-				var existUserTotalAmount = await _context.UserTotalAmounts
-					.FirstOrDefaultAsync(c =>  c.UserId == userId);
-
-				if (existUserTotalAmount == null)
-				{
-					totalAmount = userTransactionData.Amount;
-					// Create new User TotalAmount
-					var newUserTotalAmount = new UserTotalAmount
-					{
-						UpdateAt = DateTime.UtcNow,
-						UserId = userId,
-						TotalAmount = totalAmount
-					};
-
-					await _context.UserTotalAmounts.AddAsync(newUserTotalAmount);
-					await _context.SaveChangesAsync();
-				}
-				else
-				{
-					if (userTransactionData.TransactionTypeId == 1)
-					{
-						totalAmount = existUserTotalAmount.TotalAmount - userTransactionData.Amount;
-
-						existUserTotalAmount.TotalAmount = totalAmount;
-					}
-					else if (userTransactionData.TransactionTypeId == 2)
-					{
-						totalAmount = existUserTotalAmount.TotalAmount + userTransactionData.Amount;
-
-						existUserTotalAmount.TotalAmount = totalAmount;
-					}
-
-					existUserTotalAmount.UpdateAt = DateTime.UtcNow; // Update timestamp
-
-					_context.UserTotalAmounts.Update(existUserTotalAmount);
-					await _context.SaveChangesAsync();
-
-				}
-			}
-			catch (Exception ex)
-			{
-				// Log the exception here, if necessary
-				throw;
-			}
-
-			return totalAmount;
-		}
-
+		
 
 		[HttpPost]
 		public async Task<IActionResult> CreateUserTransaction([FromForm] UserTransactionCreateDto UserTransactionData)
@@ -121,8 +70,8 @@ namespace Daftari.Controllers
 					return BadRequest("can not add Transaction");
 				}
 
-				// => HandleTotalAmount
-				var totalAmount = await SaveUserTotalAmount(UserTransactionData, userId);
+				// => Add/updateTotalAmount
+				var totalAmount = await _userTotalAmountService.SaveUserTotalAmount(UserTransactionData.TransactionTypeId, UserTransactionData.Amount, userId);
 
 				// craete User Transaction
 				var newUserTransactionObj = new UserTransaction

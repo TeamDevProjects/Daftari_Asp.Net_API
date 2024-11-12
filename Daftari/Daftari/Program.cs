@@ -3,6 +3,7 @@ using Daftari.Data;
 using Daftari.Helper;
 using Daftari.Services;
 using Daftari.Services.PaymentDateServices;
+using Daftari.Services.TotalAmountServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -76,10 +77,14 @@ namespace Daftari
 			});
 
 
-
+			// Register Controllers using Debendance Injection
 			builder.Services.AddScoped<JwtHelper>();
+			builder.Services.AddScoped<PaymentDateService>();
 			builder.Services.AddScoped<ClientPaymentDateService>();
 			builder.Services.AddScoped<SupplierPaymentDateService>();
+			builder.Services.AddScoped<UserTotalAmountService>();
+			builder.Services.AddScoped<ClientTotalAmountService>();
+			builder.Services.AddScoped<SupplierTotalAmountService>();
 
 			builder.Services.AddAuthorization();
 			builder.Services.AddControllers();

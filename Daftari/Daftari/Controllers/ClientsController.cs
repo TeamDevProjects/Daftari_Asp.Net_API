@@ -12,10 +12,10 @@ namespace Daftari.Controllers
     [Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
-	public class ClientController : BasePersonController
+	public class ClientsController : BasePersonsController
 	{
 
-		public ClientController(DaftariContext context, JwtHelper jwtHelper)
+		public ClientsController(DaftariContext context, JwtHelper jwtHelper)
 			: base(context, jwtHelper)
 		{
 

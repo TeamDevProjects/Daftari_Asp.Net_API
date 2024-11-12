@@ -2,7 +2,7 @@
 use Daftari3; 
 
 ---------------------------------
---[         3 Tables        ]--
+---[         3 Tables        ]---
 ---------------------------------
 
 CREATE TABLE PaymentMethods (
@@ -82,12 +82,12 @@ select * from Users
 select * from Suppliers
 select * from Clients
 
+select * from Transactions
 select * from ClientTransactions
 select * from ClientTotalAmounts
 select * from SupplierTransactions
 select * from SupplierTotalAmounts
 
-select * from Transactions
 select * from UserTransactions
 select * from UserTotalAmounts
 

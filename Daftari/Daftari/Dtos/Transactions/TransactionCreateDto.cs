@@ -7,7 +7,7 @@ namespace Daftari.Dtos.Transactions
     public class TransactionCreateDto
     {
 
-        public byte? TransactionTypeId { get; set; } // 1 => Payment , 2 => Withdrawal
+        public byte TransactionTypeId { get; set; } // 1 => Payment , 2 => Withdrawal
 
        // public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
 
