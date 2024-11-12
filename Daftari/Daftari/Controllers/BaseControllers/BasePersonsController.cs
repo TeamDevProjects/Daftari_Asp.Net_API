@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Daftari.Controllers.BaseControllers
 {
-    public class BasePersonController : BaseController
+    public class BasePersonsController : BaseController
 	{
-		public BasePersonController(DaftariContext context, JwtHelper jwtHelper)
+		public BasePersonsController(DaftariContext context, JwtHelper jwtHelper)
 			: base(context, jwtHelper)
 		{
 

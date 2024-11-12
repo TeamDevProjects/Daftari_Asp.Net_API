@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Daftari.Controllers.BaseControllers
 {
-	public class BaseTransactionController : BaseController
+	public class BaseTransactionsController : BaseController
 	{
-		public BaseTransactionController(DaftariContext context, JwtHelper jwtHelper)
+		public BaseTransactionsController(DaftariContext context, JwtHelper jwtHelper)
 			: base(context, jwtHelper)
 		{
 		}

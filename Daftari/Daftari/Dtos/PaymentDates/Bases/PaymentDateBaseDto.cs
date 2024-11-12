@@ -1,6 +1,6 @@
-﻿namespace Daftari.Dtos.PaymentDates
+﻿namespace Daftari.Dtos.PaymentDates.Bases
 {
-	public class SupplierPaymentDateCreateDto
+	public class PaymentDateBaseDto
 	{
 		public DateTime DateOfPayment { get; set; }
 
@@ -9,9 +9,5 @@
 		public byte PaymentMethodId { get; set; }
 
 		public string? Notes { get; set; }
-
-		public int UserId { get; set; }
-
-		public int SupplierId { get; set; }
 	}
 }

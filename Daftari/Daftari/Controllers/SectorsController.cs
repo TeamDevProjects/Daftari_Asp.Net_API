@@ -1,44 +1,44 @@
 ﻿using Daftari.Controllers.BaseControllers;
 using Daftari.Data;
+using Daftari.Entities;
+using Daftari.Entities.Views;
 using Daftari.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Daftari.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class BusinessTypeController : BaseController
+	public class SectorsController : BaseController
 	{
 
-		public BusinessTypeController(DaftariContext context, JwtHelper jwtHelper)
+		public SectorsController(DaftariContext context, JwtHelper jwtHelper)
 			: base(context, jwtHelper)
 		{
 
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetBusinessTypes() 
+		public async Task<IActionResult> GetSectorsWithSetctorType()
 		{
 			try
 			{
-				var businessTypes = await _context.BusinessTypes.ToListAsync();
+				var sectors = await _context.SectorsViews.ToListAsync();
 
-				if (businessTypes.Count == 0)
+				if (sectors.Count == 0) 
 				{
 					return NoContent();
 				}
 
-				return Ok(businessTypes);
+				return Ok(sectors);
 			}
-			
 			catch (Exception ex) 
 			{
 				return BadRequest(ex.Message);
 			}
-			
 		}
+
 	}
 }

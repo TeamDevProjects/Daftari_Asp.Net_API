@@ -7,12 +7,12 @@ namespace Daftari.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class ClientTotalAmountController : BaseController
+	public class ClientTotalAmountsController : BaseController
 	{
-		public ClientTotalAmountController(DaftariContext context, JwtHelper jwtHelper)
+		public ClientTotalAmountsController(DaftariContext context, JwtHelper jwtHelper)
 			: base(context, jwtHelper)
 		{
-
+			// Get 
 		}
 	}
 }

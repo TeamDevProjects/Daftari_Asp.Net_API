@@ -1,13 +1,15 @@
 ﻿using Daftari.Data;
-using Daftari.Dtos.PaymentDates;
+using Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos;
 using Daftari.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Services.PaymentDateServices
 {
-	public class SupplierPaymentDateService:PaymentDateService
+    public class SupplierPaymentDateService:PaymentDateService
 	{
-		public SupplierPaymentDateService(DaftariContext context) : base(context) { }
+		public SupplierPaymentDateService(DaftariContext context) : base(context)
+		{
+		}
 
 		public async Task<SupplierPaymentDate> CreateSupplierPaymentDateAsync(SupplierPaymentDateCreateDto supplierPaymentDateCreateDto)
 		{
@@ -20,7 +22,8 @@ namespace Daftari.Services.PaymentDateServices
 			{
 
 				// add PaymentDate
-				var paymentDate = await CreatePaymentDateService(new PaymentDate
+				var paymentDate = await CreatePaymentDate(
+					new PaymentDate
 				{
 					DateOfPayment = supplierPaymentDateCreateDto.DateOfPayment,
 					TotalAmount = supplierPaymentDateCreateDto.TotalAmount,  // calcu
@@ -68,6 +71,35 @@ namespace Daftari.Services.PaymentDateServices
 				throw ex;
 			}
 
+		}
+
+		public async Task SaveSupplierPaymentDate(int supplierId, decimal totalAmount, int userId)
+		{
+			try
+			{
+				var existSupplierPaymenttDate = await _context.SupplierPaymentDates
+					.FirstOrDefaultAsync(c => c.SupplierId == supplierId && c.UserId == userId);
+
+				if (existSupplierPaymenttDate == null)
+				{
+
+					await CreateSupplierPaymentDateAsync(
+						new SupplierPaymentDateCreateDto
+						{
+							DateOfPayment = DateTime.UtcNow.AddDays(20),
+							TotalAmount = totalAmount,
+							PaymentMethodId = 1,
+							Notes = "this PaymentDate is added by default after 20 days from the first transaction",
+							UserId = userId,
+							SupplierId = supplierId
+						});
+				}
+				else
+				{
+					await UpdateTotalAmountAsync(existSupplierPaymenttDate.PaymentDateId, totalAmount);
+				}
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
 
 	}

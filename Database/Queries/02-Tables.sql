@@ -99,3 +99,7 @@ Create Table SupplierTransactions(
 )
 
 select * from Transactions
+
+
+BACKUP DATABASE Daftari3
+TO DISK = 'E:\Backup\Daftari3.bak'
