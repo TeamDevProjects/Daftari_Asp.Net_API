@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -9,5 +10,6 @@ public partial class PaymentMethod
 
     public string PaymentMethodName { get; set; } = null!;
 
-    public virtual ICollection<PaymentDate> PaymentDates { get; set; } = new List<PaymentDate>();
+	[JsonIgnore]
+	public virtual ICollection<PaymentDate> PaymentDates { get; set; } = new List<PaymentDate>();
 }

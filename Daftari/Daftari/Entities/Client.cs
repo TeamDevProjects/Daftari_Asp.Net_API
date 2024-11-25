@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -11,15 +12,20 @@ public partial class Client
 
     public int UserId { get; set; }
 
-    public string Notes { get; set; } = null!;
+    public string? Notes { get; set; }
 
-    public virtual ClientPaymentDate ClientPaymentDate { get; set; } = null!;
+	[JsonIgnore]
+	public virtual ICollection<ClientPaymentDate> ClientPaymentDates { get; set; } = new List<ClientPaymentDate>();
 
-    public virtual ClientTotalAmount ClientTotalAmount { get; set; } = null!;
+	[JsonIgnore]
+	public virtual ICollection<ClientTotalAmount> ClientTotalAmounts { get; set; } = new List<ClientTotalAmount>();
 
+	[JsonIgnore]
 	public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
 
-    public virtual Person Person { get; set; } = null!;
+	[JsonIgnore]
+	public virtual Person Person { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+	[JsonIgnore]
+	public virtual User User { get; set; } = null!;
 }

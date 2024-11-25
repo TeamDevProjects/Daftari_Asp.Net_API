@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -9,5 +10,6 @@ public partial class BusinessType
 
     public string BusinessTypeName { get; set; } = null!;
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+	[JsonIgnore]
+	public virtual ICollection<User> Users { get; set; } = new List<User>();
 }
