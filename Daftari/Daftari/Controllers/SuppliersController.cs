@@ -1,23 +1,25 @@
-﻿using Daftari.Controllers.BaseControllers;
-using Daftari.Data;
-using Daftari.Dtos.People.Person;
+﻿using Daftari.Data;
 using Daftari.Dtos.People.Supplier;
-using Daftari.Entities;
-using Daftari.Helper;
+using Daftari.Services;
+using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Daftari.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
 	[ApiController]
-	[Authorize]
-	public class SuppliersController : BasePersonsController
+	public class SuppliersController :BaseController
 	{
-		public SuppliersController(DaftariContext context, JwtHelper jwtHelper)
-			: base(context, jwtHelper)
-		{
+		private readonly ISupplierService _supplierService;
+		private readonly IPersonService _PersonService;
 
+		public SuppliersController(DaftariContext context, ISupplierService supplierService, IPersonService personService)
+			: base(context)
+		{
+			_supplierService = supplierService;
+			_PersonService = personService;
 		}
 
 
@@ -31,62 +33,102 @@ namespace Daftari.Controllers
 		[HttpPost]
 		public async Task<IActionResult> PostSupplier([FromBody] SupplierCreateDto supplierData)
 		{
-			// provide douplicate client phone
-			if (_context.People.Any(u => u.Phone == supplierData.Phone))
-				return BadRequest("Supplier already exists.");
-
-			// Get UserId from header request from token
-			var userId = GetUserIdFromToken();
-
-			if (userId == -1)
-			{
-				return Unauthorized("UserId is not founded in token");
-			}
 
 			using var transaction = await _context.Database.BeginTransactionAsync();
 
 			try
 			{
-				// create Person
-				var newPerson = await CreatePerson(new PersonCreateDto
-				{
-					Name = supplierData.Name,
-					Phone = supplierData.Phone,
-					City = supplierData.City,
-					Country = supplierData.Country,
-					Address = supplierData.Address,
-				});
 
-				if (newPerson.PersonId == 0)
-				{
-					return Conflict("can`t add this Person");
-				}
+				// provide douplicate Supplier phone
+				await _PersonService.CheckPhoneIsExistAsync(supplierData.Phone);
 
-				// create Client
-				var newSupplier = new Supplier
-				{
-					PersonId = newPerson.PersonId,
-					UserId = userId,
-					Notes = supplierData.Notes,
-				};
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
 
-				_context.Suppliers.Add(newSupplier);
-				await _context.SaveChangesAsync();
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var supplier = await _supplierService.AddSupplierAsync(supplierData, userId);
 
 				// Commit the transaction if both operations succeed
 				await transaction.CommitAsync();
 
-				return Ok("Supplier Created successfully.");
+				return Ok(supplier);
 			}
-			catch (Exception ex)
+			catch (KeyNotFoundException ex)
 			{
 				// Rollback the transaction if any error occurs
 				await transaction.RollbackAsync();
-
-				// Return an error response with the exception details
+				return NotFound(ex.Message);
+			}catch (InvalidOperationException ex)
+			{
+				// Rollback the transaction if any error occurs
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (Exception ex)
+			{
+				// Rollback the transaction if any error occurs
+				await transaction.RollbackAsync();
 				return StatusCode(500, new { error = "An error occurred while creating the user and person.", details = ex.Message });
 			}
 		}
+
+		[HttpPut("{SupplierId}")]
+		public async Task<IActionResult> UpdateSupplier([FromBody] SupplierUpdateDto SupplierData, int SupplierId)
+		{
+			var transaction = await _context.Database.BeginTransactionAsync();
+			try
+			{
+				await _supplierService.UpdateSupplierAsync(SupplierData, SupplierId);
+
+				await transaction.CommitAsync();
+
+				return Ok("supplier updated successfully");
+			}
+			catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message) ;
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
+				return StatusCode(500, new { error = "An error occurred while Updateing the Supplier and person.", details = ex.Message });
+
+			}
+		}
+
+		[HttpDelete("{SupplierId}")]
+		public async Task<IActionResult> DeleteSupplier(int SupplierId)
+		{
+			var transaction = await _context.Database.BeginTransactionAsync();
+
+			try
+			{
+				await _supplierService.DeleteSupplierAsync(SupplierId);
+
+				await transaction.CommitAsync();
+				return Ok("supplier deleted successfully");
+
+			}
+			catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
+				return StatusCode(500, new { error = "An error occurred while Updateing the Supplier and person.", details = ex.Message });
+			}
+
+		}
+
 
 	}
 }

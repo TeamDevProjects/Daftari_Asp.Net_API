@@ -6,5 +6,9 @@ namespace Daftari.Dtos.PaymentDates.ClientPaymentDateDtos
     {
         public int UserId { get; set; }
 
-    }
+		public decimal TotalAmount { get; set; }  
+
+		public byte PaymentMethodId { get; set; } 
+
+	}
 }

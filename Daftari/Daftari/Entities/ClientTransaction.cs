@@ -13,8 +13,6 @@ public partial class ClientTransaction
 
     public int ClientId { get; set; }
 
-    public decimal TotalAmount { get; set; }
-
     public virtual Client Client { get; set; } = null!;
 
     public virtual Transaction Transaction { get; set; } = null!;

@@ -13,8 +13,6 @@ public partial class SupplierTransaction
 
     public int SupplierId { get; set; }
 
-    public decimal TotalAmount { get; set; }
-
     public virtual Supplier Supplier { get; set; } = null!;
 
     public virtual Transaction Transaction { get; set; } = null!;

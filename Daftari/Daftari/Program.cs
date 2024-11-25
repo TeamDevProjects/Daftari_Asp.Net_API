@@ -1,9 +1,13 @@
 ﻿
 using Daftari.Data;
-using Daftari.Helper;
+using Daftari.Entities;
+using Daftari.Interfaces;
+using Daftari.Middleware;
+using Daftari.Repositories;
 using Daftari.Services;
-using Daftari.Services.PaymentDateServices;
-using Daftari.Services.TotalAmountServices;
+using Daftari.Services.HelperServices;
+using Daftari.Services.InterfacesServices;
+using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +15,7 @@ using System.Text;
 
 namespace Daftari
 {
-	public class Program
+    public class Program
 	{
 		public static void Main(string[] args)
 		{
@@ -77,14 +81,48 @@ namespace Daftari
 			});
 
 
-			// Register Controllers using Debendance Injection
+			// Register Controllers using Dependence Injection
 			builder.Services.AddScoped<JwtHelper>();
-			builder.Services.AddScoped<PaymentDateService>();
-			builder.Services.AddScoped<ClientPaymentDateService>();
-			builder.Services.AddScoped<SupplierPaymentDateService>();
-			builder.Services.AddScoped<UserTotalAmountService>();
-			builder.Services.AddScoped<ClientTotalAmountService>();
-			builder.Services.AddScoped<SupplierTotalAmountService>();
+
+			
+
+			// Add PersonService and Repositories
+			builder.Services.AddScoped<IPersonService, PersonService>(); // Register PersonService
+			builder.Services.AddScoped<IClientService,ClientService>();
+			builder.Services.AddScoped<IUserService, UserService>();
+			builder.Services.AddScoped<ISupplierService,SupplierService>();
+			
+
+			builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+			builder.Services.AddScoped<IClientRepository, ClientRepository>();
+			builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+			builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+			builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+			builder.Services.AddScoped<IUserTransactionRepository, UserTransactionRepository>();
+			builder.Services.AddScoped<IClientTransactionRepository, ClientTransactionRepository>();
+			builder.Services.AddScoped<ISupplierTransactionRepository, SupplierTransactionRepository>();
+			builder.Services.AddScoped<IPaymentDateRepository, PaymentDateRepository>();
+			builder.Services.AddScoped<IClientPaymentDateRepository, ClientPaymentDateRepository>();
+			builder.Services.AddScoped<ISupplierPaymentDateRepository, SupplierPaymentDateRepository>();
+			builder.Services.AddScoped<IClientTotalAmountRepository, ClientTotalAmountRepository>();
+			builder.Services.AddScoped<IUserTotalAmountRepository, UserTotalAmountRepository>();
+			builder.Services.AddScoped<ISupplierTotalAmountRepository, SupplierTotalAmountRepository>();
+
+			builder.Services.AddScoped<IPaymentDateService,PaymentDateService>();
+			builder.Services.AddScoped<IClientPaymentDateService,ClientPaymentDateService>();
+			builder.Services.AddScoped<ISupplierPaymentDateService,SupplierPaymentDateService>();
+
+			builder.Services.AddScoped<IClientTotalAmountService, ClientTotalAmountService>();
+			builder.Services.AddScoped<IUserTotalAmountService, UserTotalAmountService>();
+			builder.Services.AddScoped<ISupplierTotalAmountService, SupplierTotalAmountService>();
+
+			builder.Services.AddScoped<IClientTransactionService, ClientTransactionService>();
+			builder.Services.AddScoped<IUserTransactionService, UserTransactionService>();
+			builder.Services.AddScoped<ISupplierTransactionService, SupplierTransactionService>();
+
+
+
 
 			builder.Services.AddAuthorization();
 			builder.Services.AddControllers();
@@ -99,8 +137,10 @@ namespace Daftari
 				app.UseSwaggerUI();
 			}
 
+
 			app.UseHttpsRedirection();
 
+			app.UseMiddleware<ExceptionHandlingMiddleware>();
 			app.UseAuthentication(); // to use jwt
 			
 			app.UseAuthorization();

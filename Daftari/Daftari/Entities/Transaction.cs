@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -7,7 +8,7 @@ public partial class Transaction
 {
     public int TransactionId { get; set; }
 
-    public byte? TransactionTypeId { get; set; }
+    public byte TransactionTypeId { get; set; }
 
     public string? Notes { get; set; }
 
@@ -15,15 +16,18 @@ public partial class Transaction
 
     public decimal Amount { get; set; }
 
-    public byte[]? ImageData { get; set; } = null!;
+    public byte[]? ImageData { get; set; }
 
     public string? ImageType { get; set; }
 
-    public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
+	[JsonIgnore]
+	public virtual ClientTransaction ClientTransaction { get; set; } = null!;
 
-    public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
+	[JsonIgnore]
+	public virtual SupplierTransaction SupplierTransaction { get; set; } = null!;
 
     public virtual TransactionType? TransactionType { get; set; }
 
-    public virtual ICollection<UserTransaction> UserTransactions { get; set; } = new List<UserTransaction>();
+	[JsonIgnore]
+	public virtual UserTransaction UserTransaction { get; set; } = null!;
 }

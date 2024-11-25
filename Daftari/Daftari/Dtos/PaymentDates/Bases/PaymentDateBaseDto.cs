@@ -1,12 +1,11 @@
-﻿namespace Daftari.Dtos.PaymentDates.Bases
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Daftari.Dtos.PaymentDates.Bases
 {
 	public class PaymentDateBaseDto
 	{
+		[Required]
 		public DateTime DateOfPayment { get; set; }
-
-		public decimal TotalAmount { get; set; }
-
-		public byte PaymentMethodId { get; set; }
 
 		public string? Notes { get; set; }
 	}

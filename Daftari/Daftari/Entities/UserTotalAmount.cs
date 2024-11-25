@@ -1,13 +1,17 @@
-﻿namespace Daftari.Entities
+﻿using System;
+using System.Collections.Generic;
+
+namespace Daftari.Entities;
+
+public partial class UserTotalAmount
 {
-	public class UserTotalAmount
-	{
+    public int UserTotalAmountId { get; set; }
 
-		public int UserTotalAmountId { get; set; }
-		public int UserId { get; set; }
-		public decimal TotalAmount { get; set; } = 0;
-		public DateTime UpdateAt { get; set; } = DateTime.Now;
+    public int UserId { get; set; }
 
-		public User User { get; set; } = null!; // Navigation property
-	}
+    public decimal TotalAmount { get; set; }
+
+    public DateTime UpdateAt { get; set; }
+
+    public virtual User User { get; set; } = null!;
 }

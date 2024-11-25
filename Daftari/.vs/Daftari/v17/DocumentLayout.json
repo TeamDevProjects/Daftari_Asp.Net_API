@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\controllers\\supplierpaymentdatescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\controllers\\supplierpaymentdatescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\data\\settings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\data\\settings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\services\\helperservices\\jwthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\services\\helperservices\\jwthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|e:\\old_computer\\00-fullstack_dotnet_app\\daftari_application\\daftari\\daftari\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B005E000-A9F3-4EA1-8265-721119576B75}|Daftari\\Daftari.csproj|solutionrelative:daftari\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +22,45 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SupplierPaymentDatesController.cs",
-              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Controllers\\SupplierPaymentDatesController.cs",
-              "RelativeDocumentMoniker": "Daftari\\Controllers\\SupplierPaymentDatesController.cs",
-              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Controllers\\SupplierPaymentDatesController.cs",
-              "RelativeToolTip": "Daftari\\Controllers\\SupplierPaymentDatesController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAAAAAA",
+              "DocumentIndex": 1,
+              "Title": "JwtHelper.cs",
+              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Services\\HelperServices\\JwtHelper.cs",
+              "RelativeDocumentMoniker": "Daftari\\Services\\HelperServices\\JwtHelper.cs",
+              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Services\\HelperServices\\JwtHelper.cs",
+              "RelativeToolTip": "Daftari\\Services\\HelperServices\\JwtHelper.cs",
+              "ViewState": "AQIAAA8AAABAjpmZmZktwAsAAABQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-12T19:23:09.357Z",
+              "WhenOpened": "2024-11-24T17:59:36.274Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\appsettings.json",
+              "RelativeDocumentMoniker": "Daftari\\appsettings.json",
+              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\appsettings.json",
+              "RelativeToolTip": "Daftari\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-11-24T17:49:52.909Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Settings.cs",
+              "DocumentMoniker": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Data\\Settings.cs",
+              "RelativeDocumentMoniker": "Daftari\\Data\\Settings.cs",
+              "ToolTip": "E:\\Old_Computer\\00-FullStack_DotNet_App\\Daftari_Application\\Daftari\\Daftari\\Data\\Settings.cs",
+              "RelativeToolTip": "Daftari\\Data\\Settings.cs",
+              "ViewState": "AQIAAA8AAADAX2ZmZuYrwCcAAAA7AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-24T17:40:49.354Z",
               "EditorCaption": ""
             }
           ]

@@ -1,5 +1,4 @@
-
-use Daftari3; 
+use Daftari; 
 
 ---------------------------------
 ---[         3 Tables        ]---
@@ -78,18 +77,25 @@ CREATE TABLE UserTotalAmounts (
 
 
 select * from People
+select * from Clients
 select * from Users
 select * from Suppliers
-select * from Clients
+
+
 
 select * from Transactions
-select * from ClientTransactions
-select * from ClientTotalAmounts
 select * from SupplierTransactions
-select * from SupplierTotalAmounts
-
+select * from ClientTransactions
 select * from UserTransactions
+
+
+select * from ClientTotalAmounts
+select * from SupplierTotalAmounts
 select * from UserTotalAmounts
 
 select * from PaymentDates
 select * from ClientPaymentDates
+select * from SupplierPaymentDates
+
+
+
