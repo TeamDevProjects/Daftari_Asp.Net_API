@@ -13,11 +13,11 @@ public partial class Client
 
     public string Notes { get; set; } = null!;
 
-    public virtual ICollection<ClientPaymentDate> ClientPaymentDates { get; set; } = new List<ClientPaymentDate>();
+    public virtual ClientPaymentDate ClientPaymentDate { get; set; } = null!;
 
-    public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
-    
-    public virtual ICollection<ClientTotalAmount> ClientTotalAmounts { get; set; } = new List<ClientTotalAmount>();
+    public virtual ClientTotalAmount ClientTotalAmount { get; set; } = null!;
+
+	public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
 
     public virtual Person Person { get; set; } = null!;
 

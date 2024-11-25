@@ -1,21 +1,16 @@
-﻿using Daftari.Controllers.BaseControllers;
-using Daftari.Data;
-using Daftari.Entities;
-using Daftari.Entities.Views;
-using Daftari.Helper;
-using Microsoft.AspNetCore.Http;
+﻿using Daftari.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class SectorsController : BaseController
 	{
 
-		public SectorsController(DaftariContext context, JwtHelper jwtHelper)
-			: base(context, jwtHelper)
+		public SectorsController(DaftariContext context)
+			: base(context)
 		{
 
 		}

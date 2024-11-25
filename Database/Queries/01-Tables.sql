@@ -1,5 +1,5 @@
 
-use Daftari3; 
+use Daftari;
 
 ---------------------------------
 --[         1 Tables        ]--
@@ -38,7 +38,7 @@ CREATE TABLE Clients (
     ClientId INT IDENTITY(1,1) NOT NULL,
     PersonId INT NOT NULL REFERENCES dbo.People(PersonId),
     UserId INT NOT NULL REFERENCES dbo.Users(UserId),
-    Notes NVARCHAR(500) NOT NULL,
+    Notes NVARCHAR(500) NULL,
     PRIMARY KEY (ClientId)
 );
 
@@ -46,7 +46,6 @@ CREATE TABLE Suppliers (
     SupplierId INT IDENTITY(1,1) NOT NULL,
     PersonId INT NOT NULL REFERENCES dbo.People(PersonId),
     UserId INT NOT NULL REFERENCES dbo.Users(UserId),
-    Notes NVARCHAR(500) NOT NULL,
+    Notes NVARCHAR(500) NULL,
     PRIMARY KEY (SupplierId)
 );
-

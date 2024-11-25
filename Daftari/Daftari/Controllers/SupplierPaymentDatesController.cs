@@ -1,23 +1,28 @@
-﻿using Daftari.Controllers.BaseControllers;
-using Daftari.Data;
+﻿using Daftari.Data;
 using Daftari.Dtos.PaymentDates.Bases;
 using Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos;
-using Daftari.Helper;
-using Daftari.Services.PaymentDateServices;
+using Daftari.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Controllers
 {
+    [Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class SupplierPaymentDatesController : BaseController
 	{
-		private readonly SupplierPaymentDateService _supplierPaymentDateService;
-		public SupplierPaymentDatesController(DaftariContext context, JwtHelper jwtHelper
-			, SupplierPaymentDateService supplierPaymentDateService) : base(context, jwtHelper)
+		private readonly ISupplierPaymentDateService _supplierPaymentDateService;
+		private readonly IPaymentDateService _paymentDateService;
+		private readonly ISupplierTotalAmountService _supplierTotalAmountService;
+
+
+		public SupplierPaymentDatesController(DaftariContext context
+			, ISupplierPaymentDateService supplierPaymentDateService,IPaymentDateService paymentDateService,ISupplierTotalAmountService supplierTotalAmountService) : base(context)
 		{
 			_supplierPaymentDateService = supplierPaymentDateService;
+			_paymentDateService = paymentDateService;
+			_supplierTotalAmountService = supplierTotalAmountService;
 
 		}
 
@@ -26,6 +31,7 @@ namespace Daftari.Controllers
 		[HttpPost]
 		public async Task<IActionResult> AddSupplierPaymentDate(SupplierPaymentDateBaseDto dto)
 		{
+			var transaction = _context.Database.BeginTransaction();
 			try
 			{
 				var userId = GetUserIdFromToken();
@@ -35,30 +41,38 @@ namespace Daftari.Controllers
 					return Unauthorized("UserId is not founded in token");
 				}
 
-				var existSupplierPaymentDate = await _context.SupplierPaymentDates
-					.FirstOrDefaultAsync(c => c.SupplierId == dto.SupplierId && c.UserId == userId);
+				var existSupplierPaymentDate = await _supplierPaymentDateService.GetSupplierPaymentDateBySupplierAsync(dto.SupplierId);
 
-				if (existSupplierPaymentDate != null)
-				{
-					return BadRequest("This Supplier payment date is exist you can not add it again");
-				}
+				if (existSupplierPaymentDate != null) return BadRequest("This Supplier payment date is exist you can not add it again");
 
-				var clientPaymentDate = await _supplierPaymentDateService.CreateSupplierPaymentDateAsync(
+				var supplierTotalAmount = await _supplierTotalAmountService.GetSupplierTotalAmountBySupplierId(dto.SupplierId);
+				
+				var supplierPaymentDate = await _supplierPaymentDateService.AddSupplierPaymentDateAsync(
 					new SupplierPaymentDateCreateDto
 					{
 						DateOfPayment = dto.DateOfPayment,// default no
-						TotalAmount = dto.TotalAmount,
+						TotalAmount = supplierTotalAmount.TotalAmount,
 						PaymentMethodId = 1,
 						Notes = "this PaymentDate is added by User",
 						UserId = userId,
 						SupplierId = dto.SupplierId,
 					});
 
-				return Ok("Payment_date created Succefuly");
+				await transaction.CommitAsync();
+				return Ok(supplierPaymentDate);
 
 			}
-			catch (Exception ex)
+			catch (InvalidOperationException ex)
 			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
 		}
@@ -67,22 +81,29 @@ namespace Daftari.Controllers
 		[HttpPut("{supplierPaymentDateId}")]
 		public async Task<IActionResult> UpdateSupplierPaymentDate(SupplierPaymentDateBaseDto dto, int supplierPaymentDateId)
 		{
+			var transaction = _context.Database.BeginTransaction();
+
 			try
 			{
-				var existSupplierPaymentDate = await _context.SupplierPaymentDates.FindAsync(supplierPaymentDateId);
+				var existSupplierPaymentDate = await _supplierPaymentDateService.GetSupplierPaymentDateAsync(supplierPaymentDateId);
 
-				if (existSupplierPaymentDate == null)
-				{
-					return BadRequest($"This supplier_payment_date = {supplierPaymentDateId} is not exist ");
-				}
-
-
-				await _supplierPaymentDateService.UpdateDateOfBaymentAsync(supplierPaymentDateId, dto.DateOfPayment);
-
+				await _paymentDateService.UpdateDatePaymentDateAsync(existSupplierPaymentDate.PaymentDateId, dto.DateOfPayment,dto.Notes);
+				
+				await transaction.CommitAsync();
+				
 				return Ok("date of payment_date updated Succefuly");
 			}
-			catch (Exception ex)
+			catch (InvalidOperationException ex)
 			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
 
@@ -94,17 +115,14 @@ namespace Daftari.Controllers
 		{
 			try
 			{
-
-				var existSupplierPaymentDate = await _context.SupplierPaymentDates.FindAsync(supplierPaymentDateId);
-
-				if (existSupplierPaymentDate == null)
-				{
-					return BadRequest($"This supplier_payment_date = {supplierPaymentDateId} is not exist ");
-				}
+				var existSupplierPaymentDate = await _supplierPaymentDateService.GetSupplierPaymentDateAsync(supplierPaymentDateId);
 
 				return Ok(existSupplierPaymentDate);
 			}
-			catch (Exception ex)
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}catch (Exception ex)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
@@ -121,43 +139,52 @@ namespace Daftari.Controllers
 					return Unauthorized("UserId is not founded in token");
 				}
 
-				var existClientPaymentDate = await _context.SupplierPaymentDates.FirstOrDefaultAsync((c) => c.SupplierId == supplierId && c.UserId == userId);
+				var existSupplierPaymentDate = await _supplierPaymentDateService.GetSupplierPaymentDateBySupplierAsync(supplierId);
 
-				if (existClientPaymentDate == null)
-				{
-					return BadRequest($"This supplier_payment_date supplierId = {supplierId} is not exist ");
-				}
-
-				return Ok(existClientPaymentDate);
+				return Ok(existSupplierPaymentDate);
 			}
-			catch (Exception ex)
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}catch (Exception ex)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
 		}
 
 		// Delete
-		[HttpDelete]
+		[HttpDelete("{supplierPaymentDateId}")]
 		public async Task<IActionResult> DeleteSupplierPaymentDateByUserId(int supplierPaymentDateId)
 		{
+			var transaction = _context.Database.BeginTransaction();
 			try
 			{
-				var existSupplierPaymentDate = await _context.SupplierPaymentDates.FindAsync(supplierPaymentDateId);
+				var existSupplierPaymentDate = await _supplierPaymentDateService.GetSupplierPaymentDateAsync(supplierPaymentDateId);
 
-				if (existSupplierPaymentDate == null)
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1 || userId != existSupplierPaymentDate.UserId)
 				{
-					return BadRequest($"This supplier_payment_date = {supplierPaymentDateId} is not exist ");
+					return Unauthorized("UserId is not founded in token");
 				}
 
-				_context.SupplierPaymentDates.Remove(existSupplierPaymentDate);
-				await _context.SaveChangesAsync();
+				await _supplierPaymentDateService.DeleteSupplierPaymentDateAsync(existSupplierPaymentDate.SupplierId);
 
+				await transaction.CommitAsync();
 				return Ok(" supplier_payment_date deleted Succefuly");
 			}
-			catch (Exception ex)
+			catch (KeyNotFoundException ex)
 			{
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message);
+			}catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
-
 			}
 		}
 

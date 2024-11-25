@@ -9,5 +9,5 @@ public partial class PaymentMethod
 
     public string PaymentMethodName { get; set; } = null!;
 
-    public virtual ICollection<PaymentDate> PaymentDates { get; set; }= new List<PaymentDate>();
+    public virtual ICollection<PaymentDate> PaymentDates { get; set; } = new List<PaymentDate>();
 }

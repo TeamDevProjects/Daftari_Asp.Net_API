@@ -6,5 +6,10 @@ namespace Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos
 	{
         public int UserId { get; set; }
 
-    }
+
+		public decimal TotalAmount { get; set; }  
+
+		public byte PaymentMethodId { get; set; } 
+
+	}
 }

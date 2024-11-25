@@ -17,9 +17,9 @@ public partial class Person
 
     public string Address { get; set; } = null!;
 
-    public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
+    public virtual Client Client { get; set; } = null!;
 
-    public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
+    public virtual Supplier Supplier { get; set; } = null!;
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+	public virtual User User { get; set; } = null!;
 }

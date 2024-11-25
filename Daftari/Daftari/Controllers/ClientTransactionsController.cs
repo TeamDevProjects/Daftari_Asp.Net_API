@@ -1,32 +1,27 @@
-﻿using Daftari.Controllers.BaseControllers;
-using Daftari.Data;
-using Daftari.Dtos.Transactions;
+﻿using Daftari.Data;
+using Daftari.Dtos.Transactions.ClientTransactionDto;
 using Daftari.Entities;
-using Daftari.Helper;
-using Daftari.Services.Images;
-using Daftari.Services.PaymentDateServices;
-using Daftari.Services.TotalAmountServices;
+using Daftari.Services;
+using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Azure.Core.HttpHeader;
 
 namespace Daftari.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
 	[ApiController]
-	[Authorize]
-	public class ClientTransactionsController : BaseTransactionsController
+	public class ClientTransactionsController : BaseController
 	{
-		private readonly ClientPaymentDateService _clientPaymentDateService;
-		private readonly ClientTotalAmountService _clientTotalAmountService;
+		private readonly IClientTransactionService _clientTransactionService;
 
 		public ClientTransactionsController(
-			DaftariContext context, JwtHelper jwtHelper,
-			ClientPaymentDateService clientPaymentDateService, ClientTotalAmountService clientTotalAmountService)
-			: base(context, jwtHelper)
+			DaftariContext context,
+
+			IClientTransactionService clientTransactionService)
+			: base(context)
 		{
-			_clientPaymentDateService = clientPaymentDateService;
-			_clientTotalAmountService = clientTotalAmountService;
+			_clientTransactionService = clientTransactionService;
 		}
 
 
@@ -34,72 +29,80 @@ namespace Daftari.Controllers
 		// Update  
 		// Delete  
 		// Get => view
-		
 
-		[HttpPost]
+		// Update  
+
+		// Update transaction => update clientTransaction totalamount
+		// update totalAmount 1
+		// update PaymentDate 1
+
+		[HttpPost] 
 		public async Task<IActionResult> CreateClientTransaction([FromForm] ClientTransactionCreateDto clientTransactionData)
 		{
-			// Handel Uploading Image
-			var ImageObj = await ImageServices.HandelImageServices(clientTransactionData.FormImage!);
-
-			clientTransactionData.ImageData = ImageObj.ImageData;
-			clientTransactionData.ImageType = ImageObj.ImageType;
-
-			// Get UserId from header request from token
-			var userId = GetUserIdFromToken();
-
-			if (userId == -1)
-			{
-				return Unauthorized("UserId is not founded in token");
-			}
 
 			using var transaction = await _context.Database.BeginTransactionAsync();
 
 			try
 			{
-				
-				// create Base Transaction
-				var newTransactionObj = await CreateTransactionAsync(
-					new Transaction
-				{
-					TransactionTypeId = clientTransactionData.TransactionTypeId,
-					Notes = clientTransactionData.Notes,
-					TransactionDate = DateTime.Now,
-					Amount = clientTransactionData.Amount,
-					ImageData = clientTransactionData.ImageData,
-					ImageType = clientTransactionData.ImageType,
-					
-				});
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
 
-				if (newTransactionObj == null) 
-				{
-					return BadRequest("can not add Transaction");
-				}
+				if (userId == -1) return Unauthorized("UserId is not found in token");
 
-				// => HandleTotalAmount
-				var totalAmount = await _clientTotalAmountService.SaveClientTotalAmount(
-					clientTransactionData.TransactionTypeId, clientTransactionData.Amount, clientTransactionData.ClientId, userId);
-				
-				// craete Client Transaction
-				var newClientTransactionObj = new ClientTransaction
-				{
-					TransactionId = newTransactionObj!.TransactionId,
-					UserId = userId,
-					ClientId = clientTransactionData.ClientId,
-					TotalAmount= totalAmount
+				var clientTransaction = await _clientTransactionService.AddClientTransactionAsync(clientTransactionData, userId);
 
-				};
-
-				_context.ClientTransactions.Add(newClientTransactionObj);
-				await _context.SaveChangesAsync();
-
-
-				// Default PaymentDate add in firsy time or just update totalAmount
-				await _clientPaymentDateService.SaveClientPaymentDate(clientTransactionData.ClientId, totalAmount,userId);
-
-
+				// Commit transaction
 				await transaction.CommitAsync();
-				return Ok("Transaction Created Succfuly");
+				return Ok(clientTransaction);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return NotFound(ex.Message);
+			}catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return BadRequest(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
+		[HttpPut]
+		public async Task<IActionResult> UpdateClientTransaction([FromForm] ClientTransactionUpdateDto clientTransactionData)
+		{
+
+			using var transaction = await _context.Database.BeginTransactionAsync();
+
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not found in token");
+
+				var clientTransaction = await _clientTransactionService.UpdateClientTransactionAsync(clientTransactionData);
+
+				// Commit transaction
+				await transaction.CommitAsync();
+				return Ok(clientTransaction);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return NotFound(ex.Message);
+			}
+			catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return BadRequest(ex.Message);
 			}
 			catch (Exception ex)
 			{
@@ -110,6 +113,109 @@ namespace Daftari.Controllers
 		}
 
 
+		[HttpGet("{clientTransactionId}")]
+		public async Task<ActionResult<ClientTransaction>> GetClientTransActionsbyId(int clientTransactionId)
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not found in token");
+				}
+
+				var clientTransaction = await _clientTransactionService.GetClientTransactionAsync(clientTransactionId);
+
+				return Ok(clientTransaction);
+			
+			
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message) ;	
+			}catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+
+			}
+
+		}
+
+
+		[HttpGet("clientId/{clientId}")]
+		public async Task<ActionResult<IEnumerable<ClientTransaction>>> GetAllClientTransActions(int clientId)
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not found in token");
+				}
+
+				var clientTransactions = await _clientTransactionService.GetClientTransactionsAsync(userId,clientId);
+
+				return Ok(clientTransactions);
+
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+
+			}catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+
+			}
+
+		}
+
+
+
+		[HttpDelete("{clientTransactionId}")]
+		public async Task<IActionResult> DeleteClientTransaction(int clientTransactionId)
+		{
+			
+			// Get UserId from header request from token
+			var userId = GetUserIdFromToken();
+
+			if (userId == -1)
+			{
+				return Unauthorized("UserId is not found in token");
+			}
+
+			using var transaction = await _context.Database.BeginTransactionAsync();
+
+			try
+			{
+				await _clientTransactionService.DeleteClientTransactionAsync(clientTransactionId, userId);
+
+				// Commit transaction
+				await transaction.CommitAsync();
+				return Ok("Client Transaction deleted successfully");
+			}
+			catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return NotFound(ex.Message);
+			}catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return BadRequest(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
+				// Log the exception (e.g., using a logging framework)
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
 
 	}
 }
+
+	

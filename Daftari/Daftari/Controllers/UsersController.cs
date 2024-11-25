@@ -1,9 +1,9 @@
-﻿using Daftari.Controllers.BaseControllers;
-using Daftari.Data;
-using Daftari.Dtos.People.Person;
+﻿using Daftari.Data;
 using Daftari.Dtos.People.User;
-using Daftari.Entities;
-using Daftari.Helper;
+using Daftari.Services;
+using Daftari.Services.HelperServices;
+using Daftari.Services.InterfacesServices;
+using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +12,18 @@ namespace Daftari.Controllers
 {
     [Route("api/[controller]")]
 	[ApiController]
-	public class UsersController : BasePersonsController
+	public class UsersController : BaseController
 	{
+		private readonly IUserService _userService;
+		private readonly IPersonService _PersonService;
+		private readonly JwtHelper _jwtHelper;
 
-		public UsersController(DaftariContext context, JwtHelper jwtHelper)
-			:base(context, jwtHelper)
+		public UsersController(DaftariContext context, JwtHelper jwtHelper, IUserService userService, IPersonService personService)
+			: base(context)
 		{
-			
+			_jwtHelper = jwtHelper;
+			_userService = userService ?? throw new ArgumentNullException(nameof(UserService));
+			_PersonService = personService ?? throw new ArgumentNullException(nameof(PersonService));
 		}
 
 
@@ -33,55 +38,40 @@ namespace Daftari.Controllers
 		[HttpPost("signup")]
 		public async Task<IActionResult> Register([FromBody] UserCreateDto userData)
 		{
-			if (_context.Users.Any(u => u.UserName == userData.UserName))
-				return BadRequest("Username already exists.");
+			
 
 			using var transaction = await _context.Database.BeginTransactionAsync();
 
 			try
 			{
+				if (_context.Users.Any(u => u.UserName == userData.UserName))
+					return BadRequest("Username already exists.");
 
-				// create Person
-				var newPerson = await CreatePerson(new PersonCreateDto
-				{
-					Name = userData.Name,
-					Phone = userData.Phone,
-					City = userData.City,
-					Country = userData.Country,
-					Address = userData.Address,
-				});
-
-				if (newPerson.PersonId == 0)
-				{
-					return Conflict("can`t add this Person");
-				}
+				// provide douplicate Supplier phone
+				await _PersonService.CheckPhoneIsExistAsync(userData.Phone);
 
 				// create User
-				var newUser = new User
-				{
-					UserName = userData.UserName,
-					PasswordHash = PasswordHelper.HashingPassword(userData.PasswordHash),
-					PersonId = newPerson.PersonId,
-					SectorId = userData.SectorId,
-					BusinessTypeId = userData.BusinessTypeId,
-					StoreName = userData.StoreName,
-					UserType = userData.UserType,
-				};
-
-				_context.Users.Add(newUser);
-				await _context.SaveChangesAsync();
+				var user = await _userService.AddUserAsync(userData);
 
 				// Commit the transaction if both operations succeed
 				await transaction.CommitAsync();
 
-				return Ok("User registered successfully.");
+				return Ok(user);
 			}
-			catch (Exception ex)
+			catch (InvalidOperationException ex)
 			{
 				// Rollback the transaction if any error occurs
 				await transaction.RollbackAsync();
-
-				// Return an error response with the exception details
+				return BadRequest(ex.Message);
+			}catch (KeyNotFoundException ex)
+			{
+				// Rollback the transaction if any error occurs
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message);
+			}catch (Exception ex)
+			{
+				// Rollback the transaction if any error occurs
+				await transaction.RollbackAsync();
 				return StatusCode(500, new { error = "An error occurred while creating the user and person.", details = ex.Message });
 			}
 		}
@@ -90,53 +80,130 @@ namespace Daftari.Controllers
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] UserLoginDto userData)
 		{
-			var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == userData.UserName);
-
-			if (user == null || !PasswordHelper.VerifyPassword(userData.PasswordHash, user.PasswordHash))
-				return Unauthorized("Invalid username or password.");
-
-			var accessToken = _jwtHelper.GenerateToken(user.UserId.ToString(), user.UserName, user.UserType);
-			var refreshToken = _jwtHelper.GenerateRefreshToken();
-
-			user.RefreshToken = refreshToken;
-			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); 
-			await _context.SaveChangesAsync();
-
-			return Ok(new
+			try
 			{
-				AccessToken = accessToken,
-				RefreshToken = refreshToken
-			});
+				var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == userData.UserName);
+
+				if (user == null || !PasswordHelper.VerifyPassword(userData.PasswordHash, user.PasswordHash))
+					return Unauthorized("Invalid username or password.");
+
+				var accessToken = _jwtHelper.GenerateToken(user.UserId.ToString(), user.UserName, user.UserType);
+				var refreshToken = _jwtHelper.GenerateRefreshToken();
+
+				user.RefreshToken = refreshToken;
+				user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+				await _context.SaveChangesAsync();
+
+				return Ok(new
+				{
+					AccessToken = accessToken,
+					RefreshToken = refreshToken
+				});
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(500, new { error = "An error occurred while login the user and person.", details = ex.Message });
+			}
 
 			//AhmedEid => admin
 			//EidAhmed => user
 		}
 
-		// Update
-		// Delete
-		// Get
+
+		[Authorize]
+		[HttpPut]
+		public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDto UserData)
+		{
+			var transaction = await _context.Database.BeginTransactionAsync();
+			try
+			{
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized($"userId = {userId} not found");
+
+				await _userService.UpdateUserAsync(UserData, userId);
+				await transaction.CommitAsync();
+
+				return Ok("User Updated Succeffuly");
+			}
+			catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message);
+			}catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
+				return StatusCode(500, new { error = "An error occurred while Updateing the User and person.", details = ex.Message });
+			}
+		}
+
+		[Authorize]
+		[HttpDelete]
+		public async Task<IActionResult> DeleteUser()
+		{
+			var transaction = _context.Database.BeginTransaction();
+
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1) return Unauthorized();
+
+				var isDeleted = await _userService.DeleteUserAsync(userId);
+				
+				await transaction.CommitAsync();
+
+				if (isDeleted) return Ok("user deleted successfully");
+
+				else return BadRequest("Unable to delete User");
+			}
+			catch (InvalidOperationException ex)
+			{
+				await transaction.RollbackAsync();
+				return BadRequest(ex.Message );
+			}catch (KeyNotFoundException ex)
+			{
+				await transaction.RollbackAsync();
+				return NotFound(ex.Message);
+			}catch (Exception ex)
+			{
+				await transaction.RollbackAsync();
+				return StatusCode(500, new { error = "An error occurred while Updateing the User and person.", details = ex.Message });
+			}
+
+		}
 
 		[Authorize]
 		[HttpPost("refresh-token")]
 		public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
 		{
-			var user = await _context.Users.SingleOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
-
-			if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-				return Unauthorized("Invalid refresh token or token has expired.");
-
-			var newAccessToken = _jwtHelper.GenerateToken(user.UserId.ToString(), user.UserName, user.UserType);
-
-			var newRefreshToken = _jwtHelper.GenerateRefreshToken();
-			user.RefreshToken = newRefreshToken;
-			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-			await _context.SaveChangesAsync();
-
-			return Ok(new
+			try
 			{
-				AccessToken = newAccessToken,
-				RefreshToken = newRefreshToken
-			});
+				var user = await _context.Users.SingleOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+
+				if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+					return Unauthorized("Invalid refresh token or token has expired.");
+
+				var newAccessToken = _jwtHelper.GenerateToken(user.UserId.ToString(), user.UserName, user.UserType);
+
+				var newRefreshToken = _jwtHelper.GenerateRefreshToken();
+				user.RefreshToken = newRefreshToken;
+				user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+				await _context.SaveChangesAsync();
+
+				return Ok(new
+				{
+					AccessToken = newAccessToken,
+					RefreshToken = newRefreshToken
+				});
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
 		}
 
 	}

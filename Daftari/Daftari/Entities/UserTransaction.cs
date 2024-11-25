@@ -11,8 +11,6 @@ public partial class UserTransaction
 
     public int UserId { get; set; }
 
-    public decimal TotalAmount { get; set; }
-
     public virtual Transaction Transaction { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
