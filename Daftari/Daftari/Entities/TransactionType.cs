@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -9,5 +10,6 @@ public partial class TransactionType
 
     public string TransactionTypeName { get; set; } = null!;
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+	[JsonIgnore]
+	public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

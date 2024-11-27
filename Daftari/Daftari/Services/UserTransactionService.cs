@@ -120,23 +120,46 @@ namespace Daftari.Services
             var userTotalAmount = await _userTotalAmountService.GetTotalAmountByUserId(existUserTransaction.UserId);
 
 			// calc total amount 
-			var totalAmount = transaction.Amount;
+			var oldAmount = transaction.Amount;
+            decimal newAmount = 0;
+            byte TransactionType = 0;                                                                
 
-            if (transaction.TransactionTypeId == (byte)enTransactionTypes.Payment) totalAmount -= userTotalAmount.TotalAmount;
-            else if (transaction.TransactionTypeId == (byte)enTransactionTypes.Withdrawal) totalAmount += userTotalAmount.TotalAmount;
+            newAmount = oldAmount - UserTransactionData.Amount;
+            
+            if (transaction.TransactionTypeId == (byte)enTransactionTypes.Payment) 
+            {
+                if (newAmount < 0) TransactionType = (byte)enTransactionTypes.Payment;
 
+                else if (newAmount > 0) TransactionType = (byte)enTransactionTypes.Withdrawal;
+
+                else TransactionType = transaction.TransactionTypeId;
+
+
+			}
+            else if (transaction.TransactionTypeId == (byte)enTransactionTypes.Withdrawal) 
+            {
+				if (newAmount < 0) TransactionType = (byte)enTransactionTypes.Withdrawal;
+
+				else if (newAmount > 0) TransactionType = (byte)enTransactionTypes.Payment;
+				
+                else TransactionType = transaction.TransactionTypeId;
+			}
+
+			newAmount = Math.Abs(newAmount);
 
 			transaction.ImageData = UserTransactionData.ImageData;
 			transaction.ImageType = UserTransactionData.ImageType;
-            transaction.Amount = totalAmount;
+            transaction.Amount = UserTransactionData.Amount;
 			transaction.Notes = UserTransactionData.Notes;
             transaction.TransactionDate = DateTime.Now;
 
             var isUpdatedes = await _transactionRepository.UpdateAsync(transaction);
 
-            if (!isUpdatedes) throw new InvalidOperationException("Unable to updated user transaction");
+			await _userTotalAmountService.UpdateAsync(userTotalAmount, newAmount, TransactionType);
 
-			return false;
+			if (!isUpdatedes) throw new InvalidOperationException("Unable to updated user transaction");
+
+			return true;
         }
 
 		public async Task<UserTransaction> GetUserTransactionAsync(int userTransactionId)

@@ -22,8 +22,8 @@ namespace Daftari.Controllers
 			: base(context)
 		{
 			_jwtHelper = jwtHelper;
-			_userService = userService ?? throw new ArgumentNullException(nameof(UserService));
-			_PersonService = personService ?? throw new ArgumentNullException(nameof(PersonService));
+			_userService = userService;
+			_PersonService = personService;
 		}
 
 
@@ -38,8 +38,6 @@ namespace Daftari.Controllers
 		[HttpPost("signup")]
 		public async Task<IActionResult> Register([FromBody] UserCreateDto userData)
 		{
-			
-
 			using var transaction = await _context.Database.BeginTransactionAsync();
 
 			try
@@ -51,12 +49,12 @@ namespace Daftari.Controllers
 				await _PersonService.CheckPhoneIsExistAsync(userData.Phone);
 
 				// create User
-				var user = await _userService.AddUserAsync(userData);
+				var isAdded = await _userService.AddUserAsync(userData);
 
 				// Commit the transaction if both operations succeed
 				await transaction.CommitAsync();
 
-				return Ok(user);
+				return Ok("User created successfully");
 			}
 			catch (InvalidOperationException ex)
 			{

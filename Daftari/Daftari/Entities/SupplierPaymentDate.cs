@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -13,9 +14,12 @@ public partial class SupplierPaymentDate
 
     public int PaymentDateId { get; set; }
 
-    public virtual PaymentDate PaymentDate { get; set; } = null!;
+	[JsonIgnore]
+	public virtual PaymentDate PaymentDate { get; set; } = null!;
 
-    public virtual Supplier Supplier { get; set; } = null!;
+	[JsonIgnore]
+	public virtual Supplier Supplier { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+	[JsonIgnore]
+	public virtual User User { get; set; } = null!;
 }

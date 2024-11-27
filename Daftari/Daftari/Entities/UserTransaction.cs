@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -11,7 +12,9 @@ public partial class UserTransaction
 
     public int UserId { get; set; }
 
+    [JsonIgnore]
     public virtual Transaction Transaction { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+	[JsonIgnore]
+	public virtual User User { get; set; } = null!;
 }

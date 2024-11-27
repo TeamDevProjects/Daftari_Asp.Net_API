@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -17,9 +18,12 @@ public partial class Person
 
     public string Address { get; set; } = null!;
 
-    public virtual Client Client { get; set; } = null!;
+	[JsonIgnore]
+	public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
 
-    public virtual Supplier Supplier { get; set; } = null!;
+	[JsonIgnore]
+	public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 
-	public virtual User User { get; set; } = null!;
+	[JsonIgnore]
+	public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

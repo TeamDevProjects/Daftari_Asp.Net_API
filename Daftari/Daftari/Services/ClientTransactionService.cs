@@ -86,10 +86,10 @@ namespace Daftari.Services
 			// check is exist 
 			var existClientTransaction = await _clientTransactionRepository.GetByIdAsync(ClientTransactionData.ClientTransactionId);
 
-			if (existClientTransaction == null) throw new KeyNotFoundException("Unable to find client transaction");
+			if (existClientTransaction == null) throw new KeyNotFoundException("Unable to find user transaction");
 
 			// Handel Uploading Image
-			if (ClientTransactionData.ImageData == Array.Empty<byte>() && ClientTransactionData.ImageType == string.Empty)
+			if (ClientTransactionData.ImageType == string.Empty)
 			{
 				var ImageObj = await ImageHelper.HandelImageServices(ClientTransactionData.FormImage!);
 
@@ -102,23 +102,46 @@ namespace Daftari.Services
 			var clientTotalAmount = await _clientTotalAmountService.GetClientTotalAmountByClientId(existClientTransaction.ClientId);
 
 			// calc total amount 
-			var totalAmount = transaction.Amount;
+			var oldAmount = transaction.Amount;
+			decimal newAmount = 0;
+			byte TransactionType = 0;
 
-			if (transaction.TransactionTypeId == (byte)enTransactionTypes.Payment) totalAmount -= clientTotalAmount.TotalAmount;
-			else if (transaction.TransactionTypeId == (byte)enTransactionTypes.Withdrawal) totalAmount += clientTotalAmount.TotalAmount;
+			newAmount = oldAmount - ClientTransactionData.Amount;
 
+			if (transaction.TransactionTypeId == (byte)enTransactionTypes.Payment)
+			{
+				if (newAmount < 0) TransactionType = (byte)enTransactionTypes.Payment;
+
+				else if (newAmount > 0) TransactionType = (byte)enTransactionTypes.Withdrawal;
+
+				else TransactionType = transaction.TransactionTypeId;
+
+
+			}
+			else if (transaction.TransactionTypeId == (byte)enTransactionTypes.Withdrawal)
+			{
+				if (newAmount < 0) TransactionType = (byte)enTransactionTypes.Withdrawal;
+
+				else if (newAmount > 0) TransactionType = (byte)enTransactionTypes.Payment;
+
+				else TransactionType = transaction.TransactionTypeId;
+			}
+
+			newAmount = Math.Abs(newAmount);
 
 			transaction.ImageData = ClientTransactionData.ImageData;
 			transaction.ImageType = ClientTransactionData.ImageType;
-			transaction.Amount = totalAmount;
+			transaction.Amount = ClientTransactionData.Amount;
 			transaction.Notes = ClientTransactionData.Notes;
 			transaction.TransactionDate = DateTime.Now;
 
 			var isUpdatedes = await _transactionRepository.UpdateAsync(transaction);
 
-			if (!isUpdatedes) throw new InvalidOperationException("Unable to updated client transaction");
+			await _clientTotalAmountService.UpdateClientTotalAmountAsync(clientTotalAmount, newAmount, TransactionType);
 
-			return false;
+			if (!isUpdatedes) throw new InvalidOperationException("Unable to updated user transaction");
+
+			return true;
 		}
 
 		public async Task<ClientTransaction> GetClientTransactionAsync(int clientTransactionId)

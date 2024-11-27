@@ -21,13 +21,14 @@ public partial class Transaction
     public string? ImageType { get; set; }
 
 	[JsonIgnore]
-	public virtual ClientTransaction ClientTransaction { get; set; } = null!;
+	public virtual ICollection<ClientTransaction> ClientTransactions { get; set; } = new List<ClientTransaction>();
 
 	[JsonIgnore]
-	public virtual SupplierTransaction SupplierTransaction { get; set; } = null!;
-
-    public virtual TransactionType? TransactionType { get; set; }
+	public virtual ICollection<SupplierTransaction> SupplierTransactions { get; set; } = new List<SupplierTransaction>();
 
 	[JsonIgnore]
-	public virtual UserTransaction UserTransaction { get; set; } = null!;
+	public virtual TransactionType? TransactionType { get; set; }
+	
+	[JsonIgnore]
+	public virtual ICollection<UserTransaction> UserTransactions { get; set; } = new List<UserTransaction>();
 }

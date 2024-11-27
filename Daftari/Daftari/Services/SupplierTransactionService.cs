@@ -1,6 +1,7 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.Transactions.ClientTransactionDto;
 using Daftari.Dtos.Transactions.SupplierTransactionDtos;
+using Daftari.Dtos.Transactions.SupplierTransactionDtos;
 using Daftari.Entities;
 using Daftari.Enums;
 using Daftari.Interfaces;
@@ -78,15 +79,16 @@ namespace Daftari.Services
 
         }
 
-		public async Task<bool> UpdateSupplierTransactionAsync(SupplierTransactionUpdateDto SupplierTransactionData)
+        
+        public async Task<bool> UpdateSupplierTransactionAsync(SupplierTransactionUpdateDto SupplierTransactionData)
 		{
 			// check is exist 
 			var existSupplierTransaction = await _supplierTransactionRepository.GetByIdAsync(SupplierTransactionData.SupplierTransactionId);
 
-			if (existSupplierTransaction == null) throw new KeyNotFoundException("Unable to find supplier transaction");
+			if (existSupplierTransaction == null) throw new KeyNotFoundException("Unable to find user transaction");
 
 			// Handel Uploading Image
-			if (SupplierTransactionData.ImageData == Array.Empty<byte>() && SupplierTransactionData.ImageType == string.Empty)
+			if (SupplierTransactionData.ImageType == null)
 			{
 				var ImageObj = await ImageHelper.HandelImageServices(SupplierTransactionData.FormImage!);
 
@@ -99,23 +101,46 @@ namespace Daftari.Services
 			var supplierTotalAmount = await _supplierTotalAmountService.GetSupplierTotalAmountBySupplierId(existSupplierTransaction.SupplierId);
 
 			// calc total amount 
-			var totalAmount = transaction.Amount;
+			var oldAmount = transaction.Amount;
+			decimal newAmount = 0;
+			byte TransactionType = 0;
 
-			if (transaction.TransactionTypeId == (byte)enTransactionTypes.Payment) totalAmount -= supplierTotalAmount.TotalAmount;
-			else if (transaction.TransactionTypeId == (byte)enTransactionTypes.Withdrawal) totalAmount += supplierTotalAmount.TotalAmount;
+			newAmount = oldAmount - SupplierTransactionData.Amount;
 
+			if (transaction.TransactionTypeId == (byte)enTransactionTypes.Payment)
+			{
+				if (newAmount < 0) TransactionType = (byte)enTransactionTypes.Payment;
+
+				else if (newAmount > 0) TransactionType = (byte)enTransactionTypes.Withdrawal;
+
+				else TransactionType = transaction.TransactionTypeId;
+
+
+			}
+			else if (transaction.TransactionTypeId == (byte)enTransactionTypes.Withdrawal)
+			{
+				if (newAmount < 0) TransactionType = (byte)enTransactionTypes.Withdrawal;
+
+				else if (newAmount > 0) TransactionType = (byte)enTransactionTypes.Payment;
+
+				else TransactionType = transaction.TransactionTypeId;
+			}
+
+			newAmount = Math.Abs(newAmount);
 
 			transaction.ImageData = SupplierTransactionData.ImageData;
 			transaction.ImageType = SupplierTransactionData.ImageType;
-			transaction.Amount = totalAmount;
+			transaction.Amount = SupplierTransactionData.Amount;
 			transaction.Notes = SupplierTransactionData.Notes;
 			transaction.TransactionDate = DateTime.Now;
 
 			var isUpdatedes = await _transactionRepository.UpdateAsync(transaction);
 
-			if (!isUpdatedes) throw new InvalidOperationException("Unable to updated client transaction");
+			await _supplierTotalAmountService.UpdateSupplierTotalAmountAsync(supplierTotalAmount, newAmount, TransactionType);
 
-			return false;
+			if (!isUpdatedes) throw new InvalidOperationException("Unable to updated user transaction");
+
+			return true;
 		}
 
 		public async Task<bool> DeleteAsync(int supplierTransactionId, int userId)

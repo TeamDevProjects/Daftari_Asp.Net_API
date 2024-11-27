@@ -57,7 +57,7 @@ namespace Daftari.Services
         }
 
 
-        public async Task<decimal> SaveAsync(byte TransactionTypeId, decimal Amount, int userId)
+		public async Task<decimal> SaveAsync(byte TransactionTypeId, decimal Amount, int userId)
         {
             decimal totalAmount = Amount;
 

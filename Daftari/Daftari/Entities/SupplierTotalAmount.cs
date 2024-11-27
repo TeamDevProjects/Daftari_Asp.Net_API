@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Daftari.Entities;
 
@@ -15,7 +16,9 @@ public partial class SupplierTotalAmount
 
     public DateTime UpdateAt { get; set; }
 
-    public virtual Supplier Supplier { get; set; } = null!;
+	[JsonIgnore]
+	public virtual Supplier Supplier { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+	[JsonIgnore]
+	public virtual User User { get; set; } = null!;
 }

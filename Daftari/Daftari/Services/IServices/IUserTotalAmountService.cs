@@ -8,7 +8,6 @@ namespace Daftari.Services.IServices
 
 		Task<decimal> UpdateAsync(UserTotalAmount existUserTotalAmount, decimal Amount, byte TransactionTypeId);
 
-
 		Task<decimal> SaveAsync(byte TransactionTypeId, decimal Amount, int userId);
 
 		Task<UserTotalAmount> GetTotalAmountByUserId(int userId);
