@@ -82,7 +82,6 @@ select * from Users
 select * from Suppliers
 
 
-
 select * from Transactions
 select * from SupplierTransactions
 select * from ClientTransactions
@@ -99,3 +98,5 @@ select * from SupplierPaymentDates
 
 
 
+BACKUP DATABASE Daftari
+TO DISK = 'E:\Backup\Daftari01.bak'
