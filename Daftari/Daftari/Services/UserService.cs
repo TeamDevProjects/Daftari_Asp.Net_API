@@ -1,5 +1,6 @@
 ﻿using Daftari.Dtos.People.User;
 using Daftari.Entities;
+using Daftari.Entities.Views;
 using Daftari.Interfaces;
 using Daftari.Services.HelperServices;
 using Daftari.Services.InterfacesServices;
@@ -102,6 +103,22 @@ namespace Daftari.Services
             // after deleted trigger from database
         }
 
+        public async Task<IEnumerable<UsersView>> GetAll()
+        {
+            var Users = await _userRepository.GetAll();
 
+            if (Users == null) throw new KeyNotFoundException($"There are no users in database.");
+
+            return Users;
+        }
+        
+        public async Task<IEnumerable<UsersView>> SearchForUsersByName(string temp)
+        {
+            var Users = await _userRepository.SearchByName(temp);
+
+            if (Users == null) throw new KeyNotFoundException($"There are no user has name = {temp}.");
+
+            return Users;
+        }
     }
 }

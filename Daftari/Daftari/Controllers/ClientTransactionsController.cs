@@ -25,16 +25,6 @@ namespace Daftari.Controllers
 		}
 
 
-		// Add     +
-		// Update  
-		// Delete  
-		// Get => view
-
-		// Update  
-
-		// Update transaction => update clientTransaction totalamount
-		// update totalAmount 1
-		// update PaymentDate 1
 
 		[HttpPost] 
 		public async Task<IActionResult> CreateClientTransaction([FromForm] ClientTransactionCreateDto clientTransactionData)

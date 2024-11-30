@@ -21,7 +21,7 @@ namespace Daftari
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			// Add services to the container.
+			builder.Services.AddCors();   // add cors to allow frontend to access API
 
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
@@ -34,8 +34,7 @@ namespace Daftari
 
 
 			// إعدادات JWT
-			var jwtSettings = builder.Configuration.GetSection("Jwt");
-			var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+			var key = Encoding.UTF8.GetBytes(Settings.JWT.Key);
 
 			builder.Services.AddAuthentication(options =>
 			{
@@ -49,13 +48,14 @@ namespace Daftari
 					ValidateIssuerSigningKey = true,
 					IssuerSigningKey = new SymmetricSecurityKey(key),
 					ValidateIssuer = true,
-					ValidIssuer = jwtSettings["Issuer"],
+					ValidIssuer = Settings.JWT.Issuer,
 					ValidateAudience = true,
-					ValidAudience = jwtSettings["Audience"],
+					ValidAudience = Settings.JWT.Audience,
 					ValidateLifetime = true,
 				};
 			});
 
+			// Add input in Swagger UI for token
 			builder.Services.AddSwaggerGen(c =>
 			{
 				c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -80,34 +80,36 @@ namespace Daftari
 				});
 			});
 
+			//
+			// Register using Dependence Injection
+			//
 
-			// Register Controllers using Dependence Injection
 			builder.Services.AddScoped<JwtHelper>();
 
-			
-
-			// Add PersonService and Repositories
-			builder.Services.AddScoped<IPersonService, PersonService>(); // Register PersonService
-			builder.Services.AddScoped<IClientService,ClientService>();
-			builder.Services.AddScoped<IUserService, UserService>();
-			builder.Services.AddScoped<ISupplierService,SupplierService>();
-			
-
+			// Add Repositories
+			builder.Services.AddScoped<IUserRepository, UserRepository>();
 			builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 			builder.Services.AddScoped<IClientRepository, ClientRepository>();
 			builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-			builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 			builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 			builder.Services.AddScoped<IUserTransactionRepository, UserTransactionRepository>();
 			builder.Services.AddScoped<IClientTransactionRepository, ClientTransactionRepository>();
 			builder.Services.AddScoped<ISupplierTransactionRepository, SupplierTransactionRepository>();
+
 			builder.Services.AddScoped<IPaymentDateRepository, PaymentDateRepository>();
 			builder.Services.AddScoped<IClientPaymentDateRepository, ClientPaymentDateRepository>();
 			builder.Services.AddScoped<ISupplierPaymentDateRepository, SupplierPaymentDateRepository>();
+
 			builder.Services.AddScoped<IClientTotalAmountRepository, ClientTotalAmountRepository>();
 			builder.Services.AddScoped<IUserTotalAmountRepository, UserTotalAmountRepository>();
 			builder.Services.AddScoped<ISupplierTotalAmountRepository, SupplierTotalAmountRepository>();
+
+			// Add Services
+			builder.Services.AddScoped<IUserService, UserService>();
+			builder.Services.AddScoped<IPersonService, PersonService>();
+			builder.Services.AddScoped<IClientService, ClientService>();
+			builder.Services.AddScoped<ISupplierService, SupplierService>();
 
 			builder.Services.AddScoped<IPaymentDateService,PaymentDateService>();
 			builder.Services.AddScoped<IClientPaymentDateService,ClientPaymentDateService>();
@@ -122,9 +124,8 @@ namespace Daftari
 			builder.Services.AddScoped<ISupplierTransactionService, SupplierTransactionService>();
 
 
-
-
 			builder.Services.AddAuthorization();
+
 			builder.Services.AddControllers();
 
 			var app = builder.Build();
@@ -140,8 +141,13 @@ namespace Daftari
 
 			app.UseHttpsRedirection();
 
-			app.UseMiddleware<ExceptionHandlingMiddleware>();
-			app.UseAuthentication(); // to use jwt
+			app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+			
+			// User Middlewares
+			app.UseMiddleware<ExceptionHandlingMiddleware>(); // handel Exceptions
+
+
+			app.UseAuthentication(); // to use jwts
 			
 			app.UseAuthorization();
 

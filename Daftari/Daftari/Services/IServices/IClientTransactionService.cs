@@ -1,5 +1,6 @@
 ﻿using Daftari.Dtos.Transactions.ClientTransactionDto;
 using Daftari.Entities;
+using Daftari.Entities.Views;
 using Daftari.Services.Images;
 
 namespace Daftari.Services.IServices
@@ -12,7 +13,7 @@ namespace Daftari.Services.IServices
 
 		Task<ClientTransaction> GetClientTransactionAsync(int clientTransactionId);
 
-		Task<IEnumerable<ClientTransaction>> GetClientTransactionsAsync(int userId, int clientId);
+		Task<IEnumerable<ClientsTransactionsView>> GetClientTransactionsAsync(int userId, int clientId);
 
 		Task<bool> DeleteClientTransactionAsync(int clientTransactionId, int userId);
 

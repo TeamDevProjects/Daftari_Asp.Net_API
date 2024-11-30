@@ -1,11 +1,9 @@
 ﻿using Daftari.Data;
-using Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos;
 using Daftari.Entities;
 using Daftari.Interfaces;
-using Daftari.Repositories;
-using Daftari.Services.HelperServices;
 using Daftari.Services.IServices;
-using Microsoft.EntityFrameworkCore;
+using Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos;
+using Daftari.Entities.Views;
 
 namespace Daftari.Services
 {
@@ -103,8 +101,17 @@ namespace Daftari.Services
             }
             else
             {
-                return existSupplierPaymenttDate;
-            }
+				var paymentDate = await _paymentDateRepository.GetByIdAsync(existSupplierPaymenttDate.PaymentDateId);
+
+				if (paymentDate.DateOfPayment < DateTime.Today) return existSupplierPaymenttDate;
+
+				// if dateOfPayment was expired update it 
+				paymentDate.DateOfPayment = DateTime.UtcNow.AddDays(30);
+
+				await _paymentDateRepository.UpdateAsync(paymentDate);
+
+				return existSupplierPaymenttDate;
+			}
 
         }
 
@@ -127,6 +134,57 @@ namespace Daftari.Services
         }
 
 
+		// Get View 
+		public async Task<SuppliersPaymentDateView> GetPaymentDateViewBySupplierAsync(int supplierId)
+		{
 
-    }
+			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetPaymentDateViewAsync(supplierId);
+
+			if (SupplierPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"supplierId = {supplierId} is found ");
+			}
+
+			return SupplierPaymentDate;
+		}
+		// Get All Closer
+		public async Task<IEnumerable<SuppliersPaymentDateView>> GetAllCloserPaymentsDateAsync(int userId)
+		{
+
+			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetAllCloserPaymentsDateViewAsync(userId);
+
+			if (SupplierPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"no data founded");
+			}
+
+			return SupplierPaymentDate;
+		}
+		// Get All Older
+		public async Task<IEnumerable<SuppliersPaymentDateView>> GetAllOldPaymentsDateAsync(int userId)
+		{
+
+			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetAllOldPaymentsDateViewAsync(userId);
+
+			if (SupplierPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"no data founded");
+			}
+
+			return SupplierPaymentDate;
+		}
+		// Get All Today
+		public async Task<IEnumerable<SuppliersPaymentDateView>> GetAllToDayPaymentsDateAsync(int userId)
+		{
+
+			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetAllToDayPaymentsDateViewAsync(userId);
+
+			if (SupplierPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"no data founded");
+			}
+
+			return SupplierPaymentDate;
+		}
+	}
 }

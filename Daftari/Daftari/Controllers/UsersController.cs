@@ -1,6 +1,5 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.People.User;
-using Daftari.Services;
 using Daftari.Services.HelperServices;
 using Daftari.Services.InterfacesServices;
 using Daftari.Services.IServices;
@@ -27,14 +26,7 @@ namespace Daftari.Controllers
 		}
 
 
-		[Authorize(Roles = "admin")]
-		[HttpGet]
-		public async Task<ActionResult> GetUsers()
-		{
-			return Ok(await _context.Users.ToListAsync());
-		}
-
-
+		
 		[HttpPost("signup")]
 		public async Task<IActionResult> Register([FromBody] UserCreateDto userData)
 		{
@@ -203,6 +195,51 @@ namespace Daftari.Controllers
 				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
 			}
 		}
+
+
+
+		[Authorize(Roles = "admin")]
+		[HttpGet]
+		public async Task<ActionResult> GetUsers()
+		{
+			try
+			{
+				var users = await _userService.GetAll();
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
+		[Authorize(Roles = "admin")]
+		[HttpGet("search/{temp}")]
+		public async Task<ActionResult> SearchForUsersByName(string temp)
+		{
+			try 
+			{
+				var users =  await _userService.SearchForUsersByName(temp);
+
+				return Ok(users);
+			}
+			catch(KeyNotFoundException ex) 
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+
+		}
+
+
 
 	}
 }

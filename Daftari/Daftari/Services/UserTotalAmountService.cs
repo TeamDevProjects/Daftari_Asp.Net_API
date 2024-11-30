@@ -1,9 +1,6 @@
-﻿using Daftari.Data;
-using Daftari.Entities;
+﻿using Daftari.Entities;
 using Daftari.Interfaces;
-using Daftari.Repositories;
 using Daftari.Services.IServices;
-using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Services
 {

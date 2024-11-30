@@ -172,6 +172,108 @@ namespace Daftari.Controllers
 			}
 		}
 
+		[HttpGet("View/clientId/{clientId}")]
+		public async Task<IActionResult> GetClientPaymentDateViewByClientId(int clientId)
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var existClientPaymentDate = await _clientPaymentDateService.GetPaymentDateViewByClientAsync(clientId);
+
+				return Ok(existClientPaymentDate);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+		
+		[HttpGet("today")]
+		public async Task<IActionResult> GetAllTodayClientPaymentDateByClientId()
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var todayClientPaymentDates = await _clientPaymentDateService.GetAllToDayPaymentsDateAsync(userId);
+
+				return Ok(todayClientPaymentDates);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+		
+		[HttpGet("closer")]
+		public async Task<IActionResult> GetAllCloserClientPaymentDateByClientId()
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var closerClientPaymentDates = await _clientPaymentDateService.GetAllCloserPaymentsDateAsync(userId);
+
+				return Ok(closerClientPaymentDates);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
+		[HttpGet("old")]
+		public async Task<IActionResult> GetAllOldClientPaymentDateByClientId()
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var oldClientPaymentDates = await _clientPaymentDateService.GetAllOldPaymentsDateAsync(userId);
+
+				return Ok(oldClientPaymentDates);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
+
+
 		// Delete
 		[HttpDelete("{clientPaymentDateId}")]
 		public async Task<IActionResult> DeleteClientPaymentDateByUserId(int clientPaymentDateId)

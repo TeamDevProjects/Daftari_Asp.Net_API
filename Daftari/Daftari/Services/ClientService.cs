@@ -1,7 +1,9 @@
-﻿using Daftari.Dtos.People.Client;
+﻿using Daftari.Data;
+using Daftari.Dtos.People.Client;
 using Daftari.Entities;
+using Daftari.Entities.Views;
 using Daftari.Interfaces;
-using Daftari.Services.HelperServices;
+using Daftari.Repositories;
 using Daftari.Services.IServices;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +13,16 @@ namespace Daftari.Services
     {
         private readonly IClientRepository _clientRepository;
         private readonly IPersonRepository _personRepository;
+        private readonly DaftariContext _context;
 
-        public ClientService(IPersonRepository personRepository, IClientRepository repository)
+        public ClientService( DaftariContext context,IPersonRepository personRepository, IClientRepository repository)
         {
             _clientRepository = repository;
             _personRepository = personRepository;
+            _context = context;
         }
 
-
-
-        public async Task<Client> AddClientAsync(ClientCreateDto clientData, int userId)
+        public async Task<ClientsView> AddClientAsync(ClientCreateDto clientData, int userId)
         {
             // create Person
             var newPerson = new Person
@@ -47,7 +49,10 @@ namespace Daftari.Services
             var clientAdded = await _clientRepository.AddAsync(newClient);
             if (clientAdded == null) throw new InvalidOperationException("can`t add this client");
 
-            return newClient;
+            // client view contain all data nedded
+            var clientView = await _context.ClientsViews.FirstOrDefaultAsync((c)=>c.ClientId == clientAdded.ClientId); 
+
+            return clientView;
         }
 
         public async Task<bool> UpdateClientAsync(ClientUpdateDto clientData, int clientId)
@@ -101,8 +106,33 @@ namespace Daftari.Services
             // using after delete trigger from database
         }
 
-        // get
+		public async Task<IEnumerable<ClientsView>> GetAllClients(int userId)
+		{
+			var clients = await _clientRepository.GetAll(userId);
+
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+
+			return clients;
+		}
+       
+        public async Task<IEnumerable<ClientsView>> GetAllClientsOrderedByName(int userId)
+		{
+			var clients = await _clientRepository.GetAllOrderedByName(userId);
+
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+
+			return clients;
+		}
+        
+        public async Task<IEnumerable<ClientsView>> SearchForClientsByName(string temp)
+		{
+			var clients = await _clientRepository.SearchByName(temp);
+
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+
+			return clients;
+		}
 
 
-    }
+	}
 }

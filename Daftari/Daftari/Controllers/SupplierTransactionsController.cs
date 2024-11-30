@@ -24,11 +24,6 @@ namespace Daftari.Controllers
 		}
 
 
-		// Add     +
-		// Update  
-		// Delete  
-		// Get
-
 
 		[HttpPost]
 		public async Task<IActionResult> CreateSupplierTransaction([FromForm] SupplierTransactionCreateDto SupplierTransactionData)
