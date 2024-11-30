@@ -126,8 +126,76 @@ namespace Daftari.Controllers
 				await transaction.RollbackAsync();
 				return StatusCode(500, new { error = "An error occurred while Updateing the Supplier and person.", details = ex.Message });
 			}
+		}
+
+		[HttpGet("search/{temp}")]
+		public async Task<ActionResult> SearchForUsersByName(string temp)
+		{
+			try
+			{
+				var users = await _supplierService.SearchForClientsByName(temp);
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
 
 		}
+
+		[HttpGet("orderByName")]
+		public async Task<ActionResult> GetOrderedClientsByName()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var users = await _supplierService.GetAllClientsOrderedByName(userId);
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
+		[HttpGet]
+		public async Task<ActionResult> GetAllClients()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var users = await _supplierService.GetAllSuppliers(userId);
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
 
 
 	}

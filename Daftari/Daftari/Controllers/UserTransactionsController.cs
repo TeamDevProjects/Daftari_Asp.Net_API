@@ -21,13 +21,6 @@ namespace Daftari.Controllers
 		}
 
 
-		// Add     +
-		// Update  
-		// Delete  
-		// Get => view
-
-		
-
 		[HttpPost]
 		public async Task<IActionResult> CreateUserTransaction([FromForm] UserTransactionCreateDto UserTransactionData)
 		{

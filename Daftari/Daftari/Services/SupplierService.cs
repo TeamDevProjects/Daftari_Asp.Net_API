@@ -1,10 +1,11 @@
 ﻿using Daftari.Data;
-using Daftari.Dtos.People.Supplier;
 using Daftari.Entities;
 using Daftari.Interfaces;
-using Daftari.Services.HelperServices;
-using Daftari.Services.InterfacesServices;
 using Daftari.Services.IServices;
+using Daftari.Dtos.People.Supplier;
+using Daftari.Entities.Views;
+using Daftari.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Services
 {
@@ -13,16 +14,18 @@ namespace Daftari.Services
     {
         protected readonly IPersonRepository _personRepository;
         protected readonly ISupplierRepository _supplierRepository;
+        protected readonly DaftariContext _context;
 
-        public SupplierService(IPersonRepository personRepository, DaftariContext context, ISupplierRepository supplierRepository)
+        public SupplierService(DaftariContext context,IPersonRepository personRepository, ISupplierRepository supplierRepository)
         {
             _personRepository = personRepository;
             _supplierRepository = supplierRepository;
+            _context = context;
         }
 
 
 
-        public async Task<Supplier> AddSupplierAsync(SupplierCreateDto SupplierData, int userId)
+        public async Task<SuppliersView> AddSupplierAsync(SupplierCreateDto SupplierData, int userId)
         {
             // create Person
             var newPerson = new Person
@@ -46,7 +49,9 @@ namespace Daftari.Services
             var supplierAdded = await _supplierRepository.AddAsync(newSupplier);
             if (supplierAdded == null) throw new InvalidOperationException("can`t add this Supplier");
 
-            return supplierAdded;
+            var supplierView = await _context.SuppliersViews.FirstOrDefaultAsync((c) => c.SupplierId == supplierAdded.SupplierId);
+
+            return supplierView;
         }
 
         public async Task<bool> UpdateSupplierAsync(SupplierUpdateDto SupplierData, int supplierId)
@@ -100,5 +105,33 @@ namespace Daftari.Services
             // it`s totalamount
         }
 
-    }
+		public async Task<IEnumerable<SuppliersView>> GetAllSuppliers(int userId)
+		{
+			var suppliers = await _supplierRepository.GetAll(userId);
+
+			if (suppliers == null) throw new KeyNotFoundException($"There are no clients in database.");
+
+			return suppliers;
+		}
+
+		public async Task<IEnumerable<SuppliersView>> GetAllClientsOrderedByName(int userId)
+		{
+			var suppliers = await _supplierRepository.GetAllOrderedByName(userId);
+
+			if (suppliers == null) throw new KeyNotFoundException($"There are no clients in database.");
+
+			return suppliers;
+		}
+
+		public async Task<IEnumerable<SuppliersView>> SearchForClientsByName(string temp)
+		{
+			var suppliers = await _supplierRepository.SearchByName(temp);
+
+			if (suppliers == null) throw new KeyNotFoundException($"There are no clients in database.");
+
+			return suppliers;
+		}
+
+
+	}
 }

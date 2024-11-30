@@ -1,11 +1,9 @@
-﻿using Daftari.Data;
-using Daftari.Dtos.PaymentDates.ClientPaymentDateDtos;
-using Daftari.Entities;
+﻿using Daftari.Entities;
 using Daftari.Interfaces;
-using Daftari.Repositories;
-using Daftari.Services.HelperServices;
 using Daftari.Services.IServices;
-using Microsoft.EntityFrameworkCore;
+using Daftari.Dtos.PaymentDates.ClientPaymentDateDtos;
+using Daftari.Entities.Views;
+using Daftari.Repositories;
 
 namespace Daftari.Services
 {
@@ -59,7 +57,7 @@ namespace Daftari.Services
             {
                 var newClientPaymentDate = new ClientPaymentDateCreateDto
                 {
-                    DateOfPayment = DateTime.UtcNow.AddDays(20),
+                    DateOfPayment = DateTime.UtcNow.AddDays(30),
                     TotalAmount = totalAmount,
                     PaymentMethodId = 1,
                     Notes = "this PaymentDate is added by default after 20 days from the first transaction",
@@ -71,8 +69,18 @@ namespace Daftari.Services
             }
             else
             {
+                var paymentDate = await _paymentDateRepository.GetByIdAsync(existClientPaymentDate.PaymentDateId);
+				
+                if (paymentDate .DateOfPayment < DateTime.Today) return existClientPaymentDate;
+
+				// if dateOfPayment was expired update it 
+				paymentDate.DateOfPayment = DateTime.UtcNow.AddDays(30);
+
+                await _paymentDateRepository.UpdateAsync(paymentDate);
+
                 return existClientPaymentDate;
-            }
+
+			}
 
         }
 
@@ -135,5 +143,58 @@ namespace Daftari.Services
             return true;
         }
 
-    }
+
+		// Get View 
+		public async Task<ClientsPaymentDateView> GetPaymentDateViewByClientAsync(int ClientId)
+		{
+
+			var ClientPaymentDate = await _clientpaymentDateRepository.GetPaymentDateViewAsync(ClientId);
+
+			if (ClientPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"ClientId = {ClientId} is not found ");
+			}
+
+			return ClientPaymentDate;
+		}
+		// Get All Closer
+		public async Task<IEnumerable<ClientsPaymentDateView>> GetAllCloserPaymentsDateAsync(int userId)
+		{
+
+			var ClientPaymentDate = await _clientpaymentDateRepository.GetAllCloserPaymentsDateViewAsync(userId);
+
+			if (ClientPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"no paymentDate founded");
+			}
+
+			return ClientPaymentDate;
+		}
+		// Get All Older
+		public async Task<IEnumerable<ClientsPaymentDateView>> GetAllOldPaymentsDateAsync(int userId)
+		{
+
+			var ClientPaymentDate = await _clientpaymentDateRepository.GetAllOldPaymentsDateViewAsync(userId);
+
+			if (ClientPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"no paymentDate founded");
+			}
+
+			return ClientPaymentDate;
+		}
+		// Get All Today
+		public async Task<IEnumerable<ClientsPaymentDateView>> GetAllToDayPaymentsDateAsync(int userId)
+		{
+
+			var ClientPaymentDate = await _clientpaymentDateRepository.GetAllToDayPaymentsDateViewAsync(userId);
+
+			if (ClientPaymentDate == null)
+			{
+				throw new KeyNotFoundException($"no paymentDate founded");
+			}
+
+			return ClientPaymentDate;
+		}
+	}
 }

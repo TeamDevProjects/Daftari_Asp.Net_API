@@ -1,7 +1,4 @@
-﻿using Daftari.Data;
-using Daftari.Entities;
-using Daftari.Interfaces;
-using Daftari.Services.HelperServices;
+﻿using Daftari.Interfaces;
 using Daftari.Services.IServices;
 
 namespace Daftari.Services

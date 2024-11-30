@@ -2,6 +2,7 @@
 using Daftari.Dtos.People.Client;
 using Daftari.Services;
 using Daftari.Services.HelperServices;
+using Daftari.Services.InterfacesServices;
 using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,6 @@ namespace Daftari.Controllers
 		// Update  
 		// Delete  
 		// Get
-
 
 
 		[HttpPost]
@@ -141,7 +141,74 @@ namespace Daftari.Controllers
 				return StatusCode(500, new { error = "An error occurred while Updateing the client and person.", details = ex.Message });
 
 			}
+		}
 
+		[HttpGet("search/{temp}")]
+		public async Task<ActionResult> SearchForUsersByName(string temp)
+		{
+			try
+			{
+				var users = await _clientService.SearchForClientsByName(temp);
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+
+		}
+
+		[HttpGet("orderByName")]
+		public async Task<ActionResult> GetOrderedClientsByName()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+ 
+				var users = await _clientService.GetAllClientsOrderedByName(userId);
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+		
+		[HttpGet]
+		public async Task<ActionResult> GetAllClients()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+ 
+				var users = await _clientService.GetAllClients(userId);
+
+				return Ok(users);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
 		}
 	}
 }

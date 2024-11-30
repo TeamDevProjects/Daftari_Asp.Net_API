@@ -1,5 +1,4 @@
-﻿using Daftari.Data;
-using Daftari.Entities;
+﻿using Daftari.Entities;
 using Daftari.Interfaces;
 using Daftari.Services.IServices;
 

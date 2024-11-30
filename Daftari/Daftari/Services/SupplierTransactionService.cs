@@ -1,14 +1,11 @@
 ﻿using Daftari.Data;
-using Daftari.Dtos.Transactions.ClientTransactionDto;
-using Daftari.Dtos.Transactions.SupplierTransactionDtos;
-using Daftari.Dtos.Transactions.SupplierTransactionDtos;
 using Daftari.Entities;
 using Daftari.Enums;
 using Daftari.Interfaces;
-using Daftari.Repositories;
 using Daftari.Services.Images;
 using Daftari.Services.IServices;
-using Microsoft.EntityFrameworkCore;
+using Daftari.Dtos.Transactions.SupplierTransactionDtos;
+using Daftari.Entities.Views;
 
 namespace Daftari.Services
 {
@@ -190,7 +187,7 @@ namespace Daftari.Services
         }
 
 
-        public async Task<IEnumerable<SupplierTransaction>> GetAllAsync(int userId, int supplierId)
+        public async Task<IEnumerable<SuppliersTransactionsView>> GetAllAsync(int userId, int supplierId)
         {
 
             var supplierTransactions = await _supplierTransactionRepository.GetAllAsync(userId, supplierId);

@@ -1,12 +1,11 @@
 ﻿using Daftari.Data;
-using Daftari.Dtos.Transactions.UserTransactionDtos;
 using Daftari.Entities;
 using Daftari.Enums;
 using Daftari.Interfaces;
-using Daftari.Repositories;
 using Daftari.Services.Images;
 using Daftari.Services.IServices;
-using Microsoft.EntityFrameworkCore;
+using Daftari.Dtos.Transactions.UserTransactionDtos;
+using Daftari.Entities.Views;
 
 namespace Daftari.Services
 {
@@ -169,10 +168,9 @@ namespace Daftari.Services
             if (userTransaction == null) new KeyNotFoundException($"there are no UserTransAction has this Id");
 
             return userTransaction;
+		}
 
-        }
-
-        public async Task<IEnumerable<UserTransaction>> GetUserTransactionsAsync(int userId)
+        public async Task<IEnumerable<UserTransactionsView>> GetUserTransactionsAsync(int userId)
         {
             var userTransactions = await _userTransactionRepository.GetAllAsync(userId);
 

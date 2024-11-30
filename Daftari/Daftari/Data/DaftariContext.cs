@@ -1,5 +1,6 @@
 ﻿
 using Daftari.Entities;
+using Daftari.Entities.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace Daftari.Data;
@@ -35,8 +36,6 @@ public partial class DaftariContext : DbContext
 
 	public virtual DbSet<SectorType> SectorTypes { get; set; }
 
-	public virtual DbSet<SectorsView> SectorsViews { get; set; }
-
 	public virtual DbSet<Supplier> Suppliers { get; set; }
 
 	public virtual DbSet<SupplierPaymentDate> SupplierPaymentDates { get; set; }
@@ -55,9 +54,28 @@ public partial class DaftariContext : DbContext
 
 	public virtual DbSet<UserTransaction> UserTransactions { get; set; }
 
-	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-		=> optionsBuilder.UseSqlServer("Server=.;Database=Daftari;User Id=sa;Password=sa123456;Trusted_Connection=True;TrustServerCertificate=True;");
+	// DbSet for views
+	public virtual DbSet<SectorsView> SectorsViews { get; set; }
+	public virtual DbSet<ClientsPaymentDateView> ClientsPaymentDateViews { get; set; }
+
+	public virtual DbSet<ClientsTransactionsView> ClientsTransactionsViews { get; set; }
+
+	public virtual DbSet<ClientsView> ClientsViews { get; set; }
+
+	public virtual DbSet<SuppliersPaymentDateView> SuppliersPaymentDateViews { get; set; }
+
+	public virtual DbSet<SuppliersTransactionsView> SuppliersTransactionsViews { get; set; }
+
+	public virtual DbSet<SuppliersView> SuppliersViews { get; set; }
+
+	public virtual DbSet<UserTransactionsView> UserTransactionsViews { get; set; }
+
+	public virtual DbSet<UsersView> UsersViews { get; set; }
+
+
+	//	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+	//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+	//		=> optionsBuilder.UseSqlServer("Server=.;Database=Daftari;User Id=sa;Password=sa123456;Trusted_Connection=True;TrustServerCertificate=True;");
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -199,15 +217,7 @@ public partial class DaftariContext : DbContext
 			entity.Property(e => e.SectorTypeName).HasMaxLength(50);
 		});
 
-		modelBuilder.Entity<SectorsView>(entity =>
-		{
-			entity
-				.HasNoKey()
-				.ToView("SectorsView");
-
-			entity.Property(e => e.SectorName).HasMaxLength(50);
-			entity.Property(e => e.SectorTypeName).HasMaxLength(50);
-		});
+		
 
 		modelBuilder.Entity<Supplier>(entity =>
 		{
@@ -369,6 +379,140 @@ public partial class DaftariContext : DbContext
 				.HasForeignKey(d => d.UserId)
 				.OnDelete(DeleteBehavior.ClientSetNull)
 				.HasConstraintName("FK__UserTrans__UserI__44CA3770");
+		});
+
+		modelBuilder.Entity<SectorsView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("SectorsView");
+
+			entity.Property(e => e.SectorName).HasMaxLength(50);
+			entity.Property(e => e.SectorTypeName).HasMaxLength(50);
+		});
+
+		modelBuilder.Entity<ClientsPaymentDateView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("ClientsPaymentDateView");
+
+			entity.Property(e => e.Name).HasMaxLength(50);
+			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.PaymentMethodName).HasMaxLength(50);
+			entity.Property(e => e.Phone)
+				.HasMaxLength(15)
+				.IsUnicode(false);
+		});
+
+		modelBuilder.Entity<ClientsTransactionsView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("ClientsTransactionsView");
+
+			entity.Property(e => e.Amount).HasColumnType("decimal(18, 0)");
+			entity.Property(e => e.ImageType).HasMaxLength(10);
+			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.TransactionDate).HasColumnType("datetime");
+			entity.Property(e => e.TransactionTypeName).HasMaxLength(50);
+		});
+
+		modelBuilder.Entity<ClientsView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("ClientsView");
+
+			entity.Property(e => e.Address).HasMaxLength(100);
+			entity.Property(e => e.City).HasMaxLength(50);
+			entity.Property(e => e.Country).HasMaxLength(50);
+			entity.Property(e => e.Name).HasMaxLength(50);
+			entity.Property(e => e.PaymentMethodName).HasMaxLength(50);
+			entity.Property(e => e.Phone)
+				.HasMaxLength(15)
+				.IsUnicode(false);
+			entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
+		});
+
+		modelBuilder.Entity<SuppliersPaymentDateView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("SuppliersPaymentDateView");
+
+			entity.Property(e => e.Name).HasMaxLength(50);
+			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.PaymentMethodName).HasMaxLength(50);
+			entity.Property(e => e.Phone)
+				.HasMaxLength(15)
+				.IsUnicode(false);
+		});
+
+		modelBuilder.Entity<SuppliersTransactionsView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("SuppliersTransactionsView");
+
+			entity.Property(e => e.Amount).HasColumnType("decimal(18, 0)");
+			entity.Property(e => e.ImageType).HasMaxLength(10);
+			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.TransactionDate).HasColumnType("datetime");
+			entity.Property(e => e.TransactionTypeName).HasMaxLength(50);
+		});
+
+		modelBuilder.Entity<SuppliersView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("SuppliersView");
+
+			entity.Property(e => e.Address).HasMaxLength(100);
+			entity.Property(e => e.City).HasMaxLength(50);
+			entity.Property(e => e.Country).HasMaxLength(50);
+			entity.Property(e => e.Name).HasMaxLength(50);
+			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.PaymentMethodName).HasMaxLength(50);
+			entity.Property(e => e.Phone)
+				.HasMaxLength(15)
+				.IsUnicode(false);
+			entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
+		});
+
+		modelBuilder.Entity<UserTransactionsView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("UserTransactionsView");
+
+			entity.Property(e => e.Amount).HasColumnType("decimal(18, 0)");
+			entity.Property(e => e.ImageType).HasMaxLength(10);
+			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.TransactionDate).HasColumnType("datetime");
+			entity.Property(e => e.TransactionTypeName).HasMaxLength(50);
+		});
+
+		modelBuilder.Entity<UsersView>(entity =>
+		{
+			entity
+				.HasNoKey()
+				.ToView("UsersView");
+
+			entity.Property(e => e.Address).HasMaxLength(100);
+			entity.Property(e => e.BusinessTypeName).HasMaxLength(50);
+			entity.Property(e => e.City).HasMaxLength(50);
+			entity.Property(e => e.Country).HasMaxLength(50);
+			entity.Property(e => e.Name).HasMaxLength(50);
+			entity.Property(e => e.Phone)
+				.HasMaxLength(15)
+				.IsUnicode(false);
+			entity.Property(e => e.SectorName).HasMaxLength(50);
+			entity.Property(e => e.SectorTypeName).HasMaxLength(50);
+			entity.Property(e => e.StoreName).HasMaxLength(50);
+			entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
+			entity.Property(e => e.UserName).HasMaxLength(50);
+			entity.Property(e => e.UserType).HasMaxLength(50);
 		});
 
 		OnModelCreatingPartial(modelBuilder);

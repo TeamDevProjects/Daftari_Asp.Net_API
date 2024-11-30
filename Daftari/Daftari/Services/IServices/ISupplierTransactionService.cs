@@ -1,5 +1,6 @@
 ﻿using Daftari.Dtos.Transactions.SupplierTransactionDtos;
 using Daftari.Entities;
+using Daftari.Entities.Views;
 using Daftari.Services.Images;
 
 namespace Daftari.Services.IServices
@@ -14,6 +15,6 @@ namespace Daftari.Services.IServices
 
 		Task<SupplierTransaction> GetAsync(int supplierTransactionId);
 
-		Task<IEnumerable<SupplierTransaction>> GetAllAsync(int userId, int supplierId);
+		Task<IEnumerable<SuppliersTransactionsView>> GetAllAsync(int userId, int supplierId);
 	}
 }

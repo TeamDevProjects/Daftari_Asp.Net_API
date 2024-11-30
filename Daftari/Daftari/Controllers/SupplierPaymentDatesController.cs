@@ -1,6 +1,7 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.PaymentDates.Bases;
 using Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos;
+using Daftari.Services;
 using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -151,6 +152,107 @@ namespace Daftari.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
 		}
+
+		[HttpGet("View/supplierId/{supplierId}")]
+		public async Task<IActionResult> GetSupplierPaymentDateViewByClientId(int supplierId)
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var existSupplierPaymentDate = await _supplierPaymentDateService.GetPaymentDateViewBySupplierAsync(supplierId);
+
+				return Ok(existSupplierPaymentDate);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
+		[HttpGet("today")]
+		public async Task<IActionResult> GetAllTodaySupplierPaymentDateByClientId()
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var todaySupplierPaymentDates = await _supplierPaymentDateService.GetAllToDayPaymentsDateAsync(userId);
+
+				return Ok(todaySupplierPaymentDates);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
+		[HttpGet("closer")]
+		public async Task<IActionResult> GetAllCloserSupplierPaymentDateByClientId()
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var closerSupplierPaymentDates = await _supplierPaymentDateService.GetAllCloserPaymentsDateAsync(userId);
+
+				return Ok(closerSupplierPaymentDates);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
+		[HttpGet("old")]
+		public async Task<IActionResult> GetAllOldSupplierPaymentDateByClientId()
+		{
+			try
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1)
+				{
+					return Unauthorized("UserId is not founded in token");
+				}
+
+				var oldSupplierPaymentDates = await _supplierPaymentDateService.GetAllOldPaymentsDateAsync(userId);
+
+				return Ok(oldSupplierPaymentDates);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
+			}
+		}
+
 
 		// Delete
 		[HttpDelete("{supplierPaymentDateId}")]
