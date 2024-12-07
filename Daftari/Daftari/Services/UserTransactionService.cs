@@ -6,10 +6,12 @@ using Daftari.Services.Images;
 using Daftari.Services.IServices;
 using Daftari.Dtos.Transactions.UserTransactionDtos;
 using Daftari.Entities.Views;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Daftari.Services
 {
-    public class UserTransactionService: IUserTransactionService
+	[Authorize]
+	public class UserTransactionService: IUserTransactionService
 	{
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUserTransactionRepository _userTransactionRepository;
@@ -17,7 +19,7 @@ namespace Daftari.Services
         private readonly IUserTotalAmountService _userTotalAmountService;
 
 
-
+        
 		public UserTransactionService(DaftariContext context, IUserTotalAmountService userTotalAmountService
             , IUserTransactionRepository userTransactionRepository, ITransactionRepository transactionRepository)
         {

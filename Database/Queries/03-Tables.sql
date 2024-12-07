@@ -99,4 +99,4 @@ select * from SupplierPaymentDates
 
 
 BACKUP DATABASE Daftari
-TO DISK = 'E:\Backup\Daftari01.bak'
+TO DISK = 'E:\Backup\Daftari_0.bak'

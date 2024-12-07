@@ -112,6 +112,15 @@ namespace Daftari.Services
             return Users;
         }
         
+        public async Task<UsersView> GetUserView(int userId)
+        {
+            var User = await _userRepository.GetUserView(userId);
+
+            if (User == null) throw new KeyNotFoundException($"There are no user has id = {userId}.");
+
+            return User;
+        }
+        
         public async Task<IEnumerable<UsersView>> SearchForUsersByName(string temp)
         {
             var Users = await _userRepository.SearchByName(temp);
