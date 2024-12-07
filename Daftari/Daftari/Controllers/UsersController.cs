@@ -166,7 +166,6 @@ namespace Daftari.Controllers
 
 		}
 
-		[Authorize]
 		[HttpPost("refresh-token")]
 		public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
 		{
@@ -225,6 +224,30 @@ namespace Daftari.Controllers
 			try 
 			{
 				var users =  await _userService.SearchForUsersByName(temp);
+
+				return Ok(users);
+			}
+			catch(KeyNotFoundException ex) 
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) 
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+
+		}
+
+		[Authorize]
+		[HttpGet("UserView")]
+		public async Task<ActionResult> GetUserView()
+		{
+			try 
+			{
+				var userId = GetUserIdFromToken();
+				if (userId == -1) return Unauthorized();
+
+				var users =  await _userService.GetUserView(userId);
 
 				return Ok(users);
 			}

@@ -23,6 +23,20 @@ namespace Daftari.Repositories
 			catch (Exception) { return null; }
 		}
 
+		public async Task<UsersView> GetUserView(int userId)
+		{
+			try
+			{
+				var user = await _context.UsersViews.FirstOrDefaultAsync((u)=> u.UserId == userId);
+
+				if (user == null) return null;
+
+				return user;
+			}
+			catch (Exception) { return null; }
+		}
+
+
 		public async Task<IEnumerable<UsersView>> SearchByName(string temp)
 		{
 			try

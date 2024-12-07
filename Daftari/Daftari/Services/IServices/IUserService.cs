@@ -9,6 +9,7 @@ namespace Daftari.Services.InterfacesServices
 		Task<bool> AddUserAsync(UserCreateDto userData);
 		Task<bool> UpdateUserAsync(UserUpdateDto userData, int UserId);
 		Task<bool> DeleteUserAsync(int UserId);
+		Task<UsersView> GetUserView(int userId);
 		Task<IEnumerable<UsersView>> GetAll();
 		Task<IEnumerable<UsersView>> SearchForUsersByName(string temp);
 

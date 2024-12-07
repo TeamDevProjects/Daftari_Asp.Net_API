@@ -10,9 +10,8 @@ namespace Daftari.Dtos.People.User
 
         public string PasswordHash { get; set; } = null!;
 
-        public string UserType { get; set; } = null!;
-
-        public byte SectorId { get; set; }
+        public string? UserType { get; set; } // not required
+		public byte SectorId { get; set; }
         public byte BusinessTypeId { get; set; }
     }
 }
