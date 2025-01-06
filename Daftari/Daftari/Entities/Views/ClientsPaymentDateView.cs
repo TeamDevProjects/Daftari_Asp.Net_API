@@ -17,7 +17,9 @@ public partial class ClientsPaymentDateView
 
     public string? PaymentMethodName { get; set; }
 
-    public string? Notes { get; set; }
+	public decimal? TotalAmount { get; set; }
+
+	public string? Notes { get; set; }
 
     public int ClientId { get; set; }
 

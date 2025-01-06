@@ -13,8 +13,12 @@ namespace Daftari.Services.IServices
 
 		Task<bool> DeleteClientAsync(int clientId);
 		Task<IEnumerable<ClientsView>> GetAllClients(int userId);
-		Task<IEnumerable<ClientsView>> GetAllClientsOrderedByName(int userId);
-		Task<IEnumerable<ClientsView>> SearchForClientsByName(string temp);
+		Task<IEnumerable<ClientsView>> SearchForClients(string temp);
+		Task<IEnumerable<ClientsView>> GetAllOrderedByName(int userId);
+		Task<IEnumerable<ClientsView>> GetAllOrderedByCloserPaymentDates(int userId);
+		Task<IEnumerable<ClientsView>> GetAllOrderedByOlderPaymentDates(int userId);
+		Task<IEnumerable<ClientsView>> GetAllOrderedByLargestTotalAmount(int userId);
+		Task<IEnumerable<ClientsView>> GetAllOrderedBySmallestTotalAmount(int userId);
 
 	}
 }

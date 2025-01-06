@@ -110,26 +110,85 @@ namespace Daftari.Services
 		{
 			var clients = await _clientRepository.GetAll(userId);
 
-			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
 
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
 			return clients;
 		}
        
-        public async Task<IEnumerable<ClientsView>> GetAllClientsOrderedByName(int userId)
+        public async Task<IEnumerable<ClientsView>> GetAllOrderedByName(int userId)
 		{
-			var clients = await _clientRepository.GetAllOrderedByName(userId);
+			var clients = await _clientRepository.GetOrderedByName(userId);
 
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
 			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+			return clients;
+		}
+       
+        public async Task<IEnumerable<ClientsView>> GetAllOrderedByCloserPaymentDates(int userId)
+		{
+			var clients = await _clientRepository.GetOrderedByCloserPaymentDates(userId);
 
+
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
 			return clients;
 		}
         
-        public async Task<IEnumerable<ClientsView>> SearchForClientsByName(string temp)
+        public async Task<IEnumerable<ClientsView>> GetAllOrderedByOlderPaymentDates(int userId)
 		{
-			var clients = await _clientRepository.SearchByName(temp);
+			var clients = await _clientRepository.GetOrderedByOlderPaymentDates(userId);
 
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
 			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+			return clients;
+		}
+        
+        public async Task<IEnumerable<ClientsView>> GetAllOrderedByLargestTotalAmount(int userId)
+		{
+			var clients = await _clientRepository.GetOrderedByLargestTotalAmount(userId);
 
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+			return clients;
+		}
+        
+        public async Task<IEnumerable<ClientsView>> GetAllOrderedBySmallestTotalAmount(int userId)
+		{
+			var clients = await _clientRepository.GetOrderedBySmallestTotalAmount(userId);
+
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
+			return clients;
+		}
+        
+        public async Task<IEnumerable<ClientsView>> SearchForClients(string temp)
+		{
+			var clients = await _clientRepository.Search(temp);
+
+			if (!clients.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (clients == null) throw new KeyNotFoundException($"There are no clients in database.");
 			return clients;
 		}
 

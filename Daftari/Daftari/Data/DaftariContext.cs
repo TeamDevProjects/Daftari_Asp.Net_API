@@ -91,7 +91,7 @@ public partial class DaftariContext : DbContext
 		{
 			entity.HasKey(e => e.ClientId).HasName("PK__Clients__E67E1A248096CCF6");
 
-			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.Notes).HasMaxLength(500).IsRequired(false); ;
 
 			entity.HasOne(d => d.Person).WithMany(p => p.Clients)
 				.HasForeignKey(d => d.PersonId)
@@ -167,7 +167,7 @@ public partial class DaftariContext : DbContext
 			entity.HasKey(e => e.PaymentDateId).HasName("PK__PaymentD__E842F454B92E4780");
 
 			entity.Property(e => e.DateOfPayment).HasDefaultValueSql("(dateadd(day,(30),getdate()))");
-			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.Notes).HasMaxLength(500).IsRequired(false); ;
 			entity.Property(e => e.PaymentMethodId).HasDefaultValue((byte)1);
 
 			entity.HasOne(d => d.PaymentMethod).WithMany(p => p.PaymentDates)
@@ -223,7 +223,7 @@ public partial class DaftariContext : DbContext
 		{
 			entity.HasKey(e => e.SupplierId).HasName("PK__Supplier__4BE666B49241C1FB");
 
-			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.Notes).HasMaxLength(500).IsRequired(false); ;
 
 			entity.HasOne(d => d.Person).WithMany(p => p.Suppliers)
 				.HasForeignKey(d => d.PersonId)
@@ -300,7 +300,7 @@ public partial class DaftariContext : DbContext
 
 			entity.Property(e => e.Amount).HasColumnType("decimal(18, 0)");
 			entity.Property(e => e.ImageType).HasMaxLength(10);
-			entity.Property(e => e.Notes).HasMaxLength(500);
+			entity.Property(e => e.Notes).HasMaxLength(500).IsRequired(false); ;
 			entity.Property(e => e.TransactionDate)
 				.HasDefaultValueSql("(getdate())")
 				.HasColumnType("datetime");
@@ -400,6 +400,7 @@ public partial class DaftariContext : DbContext
 			entity.Property(e => e.Name).HasMaxLength(50);
 			entity.Property(e => e.Notes).HasMaxLength(500);
 			entity.Property(e => e.PaymentMethodName).HasMaxLength(50);
+			entity.Property(e => e.TotalAmount);
 			entity.Property(e => e.Phone)
 				.HasMaxLength(15)
 				.IsUnicode(false);
@@ -444,6 +445,7 @@ public partial class DaftariContext : DbContext
 			entity.Property(e => e.Name).HasMaxLength(50);
 			entity.Property(e => e.Notes).HasMaxLength(500);
 			entity.Property(e => e.PaymentMethodName).HasMaxLength(50);
+			entity.Property(e => e.TotalAmount);
 			entity.Property(e => e.Phone)
 				.HasMaxLength(15)
 				.IsUnicode(false);

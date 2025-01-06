@@ -118,14 +118,14 @@ namespace Daftari.Services
         public async Task<bool> DeleteSupplierPaymentDateAsync(int supplierPaymentDateId)
         {
 
-            var clientpaymentDate = await _supplierpaymentDateRepository.GetByIdAsync(supplierPaymentDateId);
+            var supplierPaymentDate = await _supplierpaymentDateRepository.GetByIdAsync(supplierPaymentDateId);
 
-            if (clientpaymentDate == null) throw new KeyNotFoundException($"This payment_date = {supplierPaymentDateId} is not exist ");
+            if (supplierPaymentDate == null) throw new KeyNotFoundException($"This payment_date = {supplierPaymentDateId} is not exist ");
 
 
             var isSPaymentDateDeleted = await _supplierpaymentDateRepository.DeleteAsync(supplierPaymentDateId);
 
-            var isPaymentDateDeleted = await _paymentDateRepository.DeleteAsync(clientpaymentDate.PaymentDateId);
+            var isPaymentDateDeleted = await _paymentDateRepository.DeleteAsync(supplierPaymentDate.PaymentDateId);
 
 
             if (!isSPaymentDateDeleted && !isPaymentDateDeleted) throw new InvalidOperationException("Unable to delete supplier paymentdate");
@@ -153,11 +153,17 @@ namespace Daftari.Services
 
 			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetAllCloserPaymentsDateViewAsync(userId);
 
+			if (!SupplierPaymentDate.Any())
+			{
+				throw new Exception("No Content");
+			}
+
 			if (SupplierPaymentDate == null)
 			{
 				throw new KeyNotFoundException($"no data founded");
 			}
 
+			
 			return SupplierPaymentDate;
 		}
 		// Get All Older
@@ -165,8 +171,12 @@ namespace Daftari.Services
 		{
 
 			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetAllOldPaymentsDateViewAsync(userId);
-
-			if (SupplierPaymentDate == null)
+			if (!SupplierPaymentDate.Any())
+			{
+				throw new Exception("No Content");
+			}
+			
+            if (SupplierPaymentDate == null)
 			{
 				throw new KeyNotFoundException($"no data founded");
 			}
@@ -178,6 +188,11 @@ namespace Daftari.Services
 		{
 
 			var SupplierPaymentDate = await _supplierpaymentDateRepository.GetAllToDayPaymentsDateViewAsync(userId);
+
+			if (!SupplierPaymentDate.Any())
+			{
+				throw new Exception("No Content");
+			}
 
 			if (SupplierPaymentDate == null)
 			{

@@ -81,21 +81,27 @@ namespace Daftari.Services
 		{
 			// check is exist 
 			var existSupplierTransaction = await _supplierTransactionRepository.GetByIdAsync(SupplierTransactionData.SupplierTransactionId);
+			var transaction = await _transactionRepository.GetByIdAsync(existSupplierTransaction.TransactionId);
+			var supplierTotalAmount = await _supplierTotalAmountService.GetSupplierTotalAmountBySupplierId(existSupplierTransaction.SupplierId);
 
 			if (existSupplierTransaction == null) throw new KeyNotFoundException("Unable to find user transaction");
 
-			// Handel Uploading Image
-			if (SupplierTransactionData.ImageType == null)
+
+			// Handel Uploading Image if there are existing img uploded
+			if (SupplierTransactionData.FormImage != null)
 			{
 				var ImageObj = await ImageHelper.HandelImageServices(SupplierTransactionData.FormImage!);
 
 				SupplierTransactionData.ImageData = ImageObj.ImageData;
 				SupplierTransactionData.ImageType = ImageObj.ImageType;
 			}
+            else
+            {
+				// dont update the prev Image
+				SupplierTransactionData.ImageData = transaction.ImageData;
+				SupplierTransactionData.ImageType = transaction.ImageType;
+			}
 
-			// update transaction only
-			var transaction = await _transactionRepository.GetByIdAsync(existSupplierTransaction.TransactionId);
-			var supplierTotalAmount = await _supplierTotalAmountService.GetSupplierTotalAmountBySupplierId(existSupplierTransaction.SupplierId);
 
 			// calc total amount 
 			var oldAmount = transaction.Amount;
@@ -154,15 +160,12 @@ namespace Daftari.Services
 
             var existTransaction = await _transactionRepository.GetByIdAsync(existSupplierTransaction.TransactionId);
 
-            byte Payment = 1; byte Withdrawal = 2;
 
-            existTransaction!.TransactionTypeId = existTransaction.TransactionTypeId == Payment ? Withdrawal : Payment;
+            existTransaction!.TransactionTypeId = existTransaction.TransactionTypeId == (byte)enTransactionTypes.Payment ? (byte)enTransactionTypes.Withdrawal : (byte)enTransactionTypes.Payment;
 
 
             var totalAmount = await _supplierTotalAmountService.UpdateSupplierTotalAmountAsync(
                  existSupplierTotalAmont, existTransaction.Amount, existTransaction.TransactionTypeId);
-
-            if (totalAmount <= 0) throw new InvalidOperationException("Invalid total amount calculated");
 
 
             // delete Supplier Transaction
@@ -192,9 +195,13 @@ namespace Daftari.Services
 
             var supplierTransactions = await _supplierTransactionRepository.GetAllAsync(userId, supplierId);
 
-            if (!supplierTransactions.Any()) throw new KeyNotFoundException($"there are no SupplierTransActions has suppliertId = {supplierId}");
+			if (!supplierTransactions.Any())
+			{
+				throw new Exception("No Content");
+			}
 
-            return supplierTransactions;
+
+			return supplierTransactions;
 
         }
 

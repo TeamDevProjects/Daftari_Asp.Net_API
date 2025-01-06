@@ -1,5 +1,6 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.People.Client;
+using Daftari.Entities;
 using Daftari.Services;
 using Daftari.Services.HelperServices;
 using Daftari.Services.InterfacesServices;
@@ -144,17 +145,22 @@ namespace Daftari.Controllers
 		}
 
 		[HttpGet("search/{temp}")]
-		public async Task<ActionResult> SearchForUsersByName(string temp)
+		public async Task<ActionResult> SearchForclientsByName(string temp)
 		{
 			try
 			{
-				var users = await _clientService.SearchForClientsByName(temp);
-
-				return Ok(users);
+				var clients = await _clientService.SearchForClients(temp);
+				
+				return Ok(clients);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{
@@ -163,8 +169,8 @@ namespace Daftari.Controllers
 
 		}
 
-		[HttpGet("orderByName")]
-		public async Task<ActionResult> GetOrderedClientsByName()
+		[HttpGet("orderBy/Name")]
+		public async Task<ActionResult> GetOrderedByName()
 		{
 			try
 			{
@@ -173,20 +179,145 @@ namespace Daftari.Controllers
 
 				if (userId == -1) return Unauthorized("UserId is not founded in token");
  
-				var users = await _clientService.GetAllClientsOrderedByName(userId);
-
-				return Ok(users);
+				var clients = await _clientService.GetAllOrderedByName(userId);
+				
+				return Ok(clients);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
 			}
 		}
-		
+
+		//GetAllOrderedByCloserPaymentDates
+		[HttpGet("orderBy/CloserPaymentDates")]
+		public async Task<ActionResult> GetOrderedByCloserPaymentDates()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var clients = await _clientService.GetAllOrderedByCloserPaymentDates(userId);
+				
+				return Ok(clients);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
+		//GetAllOrderedByOlderPaymentDates
+		[HttpGet("orderBy/OlderPaymentDates")]
+		public async Task<ActionResult> GetOrderedByOlderPaymentDates()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var clients = await _clientService.GetAllOrderedByOlderPaymentDates(userId);
+				
+				return Ok(clients);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
+		//GetAllOrderedByLargestTotalAmount
+		[HttpGet("orderBy/LargestTotalAmount")]
+		public async Task<ActionResult> GetOrderedByLargestTotalAmount()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var clients = await _clientService.GetAllOrderedByLargestTotalAmount(userId);
+				
+				return Ok(clients);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
+		//GetAllOrderedBySmallestTotalAmount
+		[HttpGet("orderBy/SmallestTotalAmount")]
+		public async Task<ActionResult> GetOrderedBySmallestTotalAmount()
+		{
+			try
+			{
+				// Get UserId from header request from token
+				var userId = GetUserIdFromToken();
+
+				if (userId == -1) return Unauthorized("UserId is not founded in token");
+
+				var clients = await _clientService.GetAllOrderedBySmallestTotalAmount(userId);
+				
+				return Ok(clients);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while refresh token.", details = ex.Message });
+			}
+		}
+
 		[HttpGet]
 		public async Task<ActionResult> GetAllClients()
 		{
@@ -197,13 +328,18 @@ namespace Daftari.Controllers
 
 				if (userId == -1) return Unauthorized("UserId is not founded in token");
  
-				var users = await _clientService.GetAllClients(userId);
-
-				return Ok(users);
+				var clients = await _clientService.GetAllClients(userId);
+				
+				return Ok(clients);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{

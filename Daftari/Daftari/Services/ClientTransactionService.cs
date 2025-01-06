@@ -6,6 +6,7 @@ using Daftari.Services.Images;
 using Daftari.Services.IServices;
 using Daftari.Dtos.Transactions.ClientTransactionDto;
 using Daftari.Entities.Views;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Daftari.Services
 {
@@ -57,7 +58,6 @@ namespace Daftari.Services
             var totalAmount = await _clientTotalAmountService.SaveClientTotalAmountAsync(
                 clientTransactionData.TransactionTypeId, clientTransactionData.Amount, clientTransactionData.ClientId, userId);
 
-            if (totalAmount <= 0) new InvalidOperationException("Invalid total amount calculated");
 
 
             // Create Client Transaction
@@ -83,21 +83,26 @@ namespace Daftari.Services
 		{
 			// check is exist 
 			var existClientTransaction = await _clientTransactionRepository.GetByIdAsync(ClientTransactionData.ClientTransactionId);
+			var transaction = await _transactionRepository.GetByIdAsync(existClientTransaction.TransactionId);
+			var clientTotalAmount = await _clientTotalAmountService.GetClientTotalAmountByClientId(existClientTransaction.ClientId);
 
 			if (existClientTransaction == null) throw new KeyNotFoundException("Unable to find user transaction");
 
-			// Handel Uploading Image
-			if (ClientTransactionData.ImageType == string.Empty)
+			// Handel Uploading Image if there are existing img uploded
+			if (ClientTransactionData.FormImage != null)
 			{
 				var ImageObj = await ImageHelper.HandelImageServices(ClientTransactionData.FormImage!);
 
 				ClientTransactionData.ImageData = ImageObj.ImageData;
 				ClientTransactionData.ImageType = ImageObj.ImageType;
+            }
+            else
+            {
+				// dont update the prev Image
+				ClientTransactionData.ImageData = transaction.ImageData;
+				ClientTransactionData.ImageType = transaction.ImageType;
 			}
-
-			// update transaction only
-			var transaction = await _transactionRepository.GetByIdAsync(existClientTransaction.TransactionId);
-			var clientTotalAmount = await _clientTotalAmountService.GetClientTotalAmountByClientId(existClientTransaction.ClientId);
+		
 
 			// calc total amount 
 			var oldAmount = transaction.Amount;
@@ -156,10 +161,12 @@ namespace Daftari.Services
         {
             var clientTransactions = await _clientTransactionRepository.GetAllAsync(userId, clientId);
 
-            if (!clientTransactions.Any()) new KeyNotFoundException($"there are no ClientTransActions has clientId = {clientId}");
+			if (!clientTransactions.Any())
+			{
+				throw new Exception("No Content");
+			}
 
-
-            return clientTransactions;
+			return clientTransactions;
 
         }
 
@@ -178,14 +185,12 @@ namespace Daftari.Services
 
             var existTransaction = await _transactionRepository.GetByIdAsync(existClientTransaction.TransactionId);
 
-            byte Payment = 1; byte Withdrawal = 2;
 
-            existTransaction!.TransactionTypeId = existTransaction.TransactionTypeId == Payment ? Withdrawal : Payment;
+            existTransaction!.TransactionTypeId = existTransaction.TransactionTypeId == (byte)enTransactionTypes.Payment ? (byte)enTransactionTypes.Withdrawal : (byte)enTransactionTypes.Payment;
 
             var totalAmount = await _clientTotalAmountService.UpdateClientTotalAmountAsync(
                 existClientTotalAmont, existTransaction.Amount, existTransaction.TransactionTypeId);
 
-            if (totalAmount <= 0) throw new InvalidOperationException("Invalid total amount calculated");
 
 
             // delete Client Transaction

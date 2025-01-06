@@ -107,7 +107,12 @@ namespace Daftari.Services
         {
             var Users = await _userRepository.GetAll();
 
-            if (Users == null) throw new KeyNotFoundException($"There are no users in database.");
+			if (!Users.Any())
+			{
+				throw new Exception("No Content");
+			}
+
+			if (Users == null) throw new KeyNotFoundException($"There are no users in database.");
 
             return Users;
         }
@@ -125,7 +130,12 @@ namespace Daftari.Services
         {
             var Users = await _userRepository.SearchByName(temp);
 
-            if (Users == null) throw new KeyNotFoundException($"There are no user has name = {temp}.");
+			if (!Users.Any())
+			{
+				throw new Exception("No Content");
+			}
+
+			if (Users == null) throw new KeyNotFoundException($"There are no user has name = {temp}.");
 
             return Users;
         }

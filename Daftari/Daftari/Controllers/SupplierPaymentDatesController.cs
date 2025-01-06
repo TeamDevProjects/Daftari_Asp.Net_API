@@ -1,6 +1,7 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.PaymentDates.Bases;
 using Daftari.Dtos.PaymentDates.SupplierPaymentDateDtos;
+using Daftari.Entities;
 using Daftari.Services;
 using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -190,12 +191,17 @@ namespace Daftari.Controllers
 				}
 
 				var todaySupplierPaymentDates = await _supplierPaymentDateService.GetAllToDayPaymentsDateAsync(userId);
-
+				
 				return Ok(todaySupplierPaymentDates);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{
@@ -215,12 +221,17 @@ namespace Daftari.Controllers
 				}
 
 				var closerSupplierPaymentDates = await _supplierPaymentDateService.GetAllCloserPaymentsDateAsync(userId);
-
+				
 				return Ok(closerSupplierPaymentDates);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{
@@ -240,12 +251,17 @@ namespace Daftari.Controllers
 				}
 
 				var oldSupplierPaymentDates = await _supplierPaymentDateService.GetAllOldPaymentsDateAsync(userId);
-
+				
 				return Ok(oldSupplierPaymentDates);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{
@@ -270,7 +286,7 @@ namespace Daftari.Controllers
 					return Unauthorized("UserId is not founded in token");
 				}
 
-				await _supplierPaymentDateService.DeleteSupplierPaymentDateAsync(existSupplierPaymentDate.SupplierId);
+				await _supplierPaymentDateService.DeleteSupplierPaymentDateAsync(existSupplierPaymentDate.SupplierPaymentDateId);
 
 				await transaction.CommitAsync();
 				return Ok(" supplier_payment_date deleted Succefuly");

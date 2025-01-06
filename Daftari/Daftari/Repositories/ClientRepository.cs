@@ -17,41 +17,80 @@ namespace Daftari.Repositories
 			{
 				var clients = await _context.ClientsViews.Where((c)=>c.UserId == userId).ToListAsync();
 
-				if (clients.Any()) return clients;
-
-				return null;
+				return clients;
 			}
 			catch (Exception) { return null; }
 		}
 
 		// Search for Supplier Name [ start, middle, end ]
-		public async Task<IEnumerable<ClientsView>> SearchByName(string temp)
+		public async Task<IEnumerable<ClientsView>> Search(string temp)
 		{
 			try
 			{
-				var clients = await _context.ClientsViews.Where((u) => u.Name.Contains(temp)).ToListAsync();
+				var clients = await _context.ClientsViews.Where((u) => u.Name.Contains(temp) || u.Phone.Contains(temp)).ToListAsync();
 
-				if (clients.Any()) return clients;
-
-				return null;
+				return clients;
 			}
 			catch (Exception) { return null; }
 		}
 
 		// Get All Ordered by [ A : Z ]
-		public async Task<IEnumerable<ClientsView>> GetAllOrderedByName(int userId)
+		public async Task<IEnumerable<ClientsView>> GetOrderedByName(int userId)
 		{
 			try
 			{
 				var clients = await _context.ClientsViews.Where((c) => c.UserId == userId).OrderBy((c)=>c.Name).ToListAsync();
 
-				if (clients.Any()) return clients;
-
-				return null;
+				return clients;
 			}
 			catch (Exception) { return null; }
 		}
 
+		// Get All Ordered by PaymentDates ASC & DSC
+		public async Task<IEnumerable<ClientsView>> GetOrderedByCloserPaymentDates(int userId)
+		{
+			try
+			{
+				var clients = await _context.ClientsViews.Where((c) => c.UserId == userId).OrderBy((c) => c.DateOfPayment).ToListAsync();
+
+				return clients;
+			}
+			catch (Exception) { return null; }
+		}
+
+		public async Task<IEnumerable<ClientsView>> GetOrderedByOlderPaymentDates(int userId)
+		{
+			try
+			{
+				var clients = await _context.ClientsViews.Where((c) => c.UserId == userId).OrderByDescending((c) => c.DateOfPayment).ToListAsync();
+
+				return clients;
+			}
+			catch (Exception) { return null; }
+		}
+
+		// Get All Ordered by TotalAmount ASC & DSC
+		public async Task<IEnumerable<ClientsView>> GetOrderedByLargestTotalAmount(int userId)
+		{
+			try
+			{
+				var clients = await _context.ClientsViews.Where((c) => c.UserId == userId).OrderByDescending((c) => c.TotalAmount).ToListAsync();
+
+				return clients;
+			}
+			catch (Exception) { return null; }
+		}
+		
+		public async Task<IEnumerable<ClientsView>> GetOrderedBySmallestTotalAmount(int userId)
+		{
+			try
+			{
+				var clients = await _context.ClientsViews.Where((c) => c.UserId == userId).OrderBy((c) => c.TotalAmount).ToListAsync();
+
+				return clients;
+			}
+			catch (Exception) { return null; }
+		}
 
 
 	}

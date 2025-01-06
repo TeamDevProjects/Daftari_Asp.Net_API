@@ -146,7 +146,7 @@ namespace Daftari.Controllers
 				}
 
 				var clientTransactions = await _clientTransactionService.GetClientTransactionsAsync(userId,clientId);
-
+				
 				return Ok(clientTransactions);
 
 			}
@@ -154,7 +154,13 @@ namespace Daftari.Controllers
 			{
 				return NotFound(ex.Message);
 
-			}catch (Exception ex)
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
+			}
+			catch (Exception ex)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 

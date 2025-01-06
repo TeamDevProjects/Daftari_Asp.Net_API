@@ -1,5 +1,6 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.People.User;
+using Daftari.Entities;
 using Daftari.Services.HelperServices;
 using Daftari.Services.InterfacesServices;
 using Daftari.Services.IServices;
@@ -204,12 +205,17 @@ namespace Daftari.Controllers
 			try
 			{
 				var users = await _userService.GetAll();
-
+				
 				return Ok(users);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{

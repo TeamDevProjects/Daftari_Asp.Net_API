@@ -189,7 +189,7 @@ namespace Daftari.Controllers
 				}
 
 				var supplierTransactions = await _supplierTransactionService.GetAllAsync(userId,supplierId);
-
+				
 				return Ok(supplierTransactions);
 
 			}
@@ -199,7 +199,13 @@ namespace Daftari.Controllers
 			}catch (InvalidOperationException ex)
 			{
 				return BadRequest(ex.Message);
-			}catch (Exception ex)
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
+			}
+			catch (Exception ex)
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}

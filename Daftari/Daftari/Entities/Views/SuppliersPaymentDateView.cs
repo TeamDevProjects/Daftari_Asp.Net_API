@@ -14,6 +14,7 @@ public partial class SuppliersPaymentDateView
     public int SupplierId { get; set; }
 
     public DateTime? DateOfPayment { get; set; }
+    public decimal? TotalAmount { get; set; }
 
     public string? Notes { get; set; }
 

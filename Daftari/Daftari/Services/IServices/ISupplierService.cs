@@ -12,8 +12,12 @@ namespace Daftari.Services.IServices
 		Task<bool> DeleteSupplierAsync(int SupplierId);
 
 		Task<IEnumerable<SuppliersView>> GetAllSuppliers(int userId);
-		Task<IEnumerable<SuppliersView>> GetAllClientsOrderedByName(int userId);
-		Task<IEnumerable<SuppliersView>> SearchForClientsByName(string temp);
+		Task<IEnumerable<SuppliersView>> SearchForSuppliers(string temp);
+		Task<IEnumerable<SuppliersView>> GetAllOrderedByName(int userId);
+		Task<IEnumerable<SuppliersView>> GetAllOrderedByCloserPaymentDates(int userId);
+		Task<IEnumerable<SuppliersView>> GetAllOrderedByOlderPaymentDates(int userId);
+		Task<IEnumerable<SuppliersView>> GetAllOrderedByLargestTotalAmount(int userId);
+		Task<IEnumerable<SuppliersView>> GetAllOrderedBySmallestTotalAmount(int userId);
 
 
 	}

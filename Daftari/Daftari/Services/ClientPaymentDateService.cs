@@ -60,7 +60,7 @@ namespace Daftari.Services
                     DateOfPayment = DateTime.UtcNow.AddDays(30),
                     TotalAmount = totalAmount,
                     PaymentMethodId = 1,
-                    Notes = "this PaymentDate is added by default after 20 days from the first transaction",
+                    Notes = "this PaymentDate is added by default after 30 days from the first transaction",
                     UserId = userId,
                     ClientId = clientId
                 };
@@ -165,7 +165,12 @@ namespace Daftari.Services
 
 			if (ClientPaymentDate == null)
 			{
-				throw new KeyNotFoundException($"no paymentDate founded");
+				throw new Exception("No Content");
+			}
+            
+            if (!ClientPaymentDate.Any()) 
+            {
+				return Enumerable.Empty<ClientsPaymentDateView>();
 			}
 
 			return ClientPaymentDate;
@@ -178,9 +183,13 @@ namespace Daftari.Services
 
 			if (ClientPaymentDate == null)
 			{
-				throw new KeyNotFoundException($"no paymentDate founded");
+				throw new Exception("No Content");
 			}
 
+			if (!ClientPaymentDate.Any())
+			{
+				return Enumerable.Empty<ClientsPaymentDateView>();
+			}
 			return ClientPaymentDate;
 		}
 		// Get All Today
@@ -189,10 +198,16 @@ namespace Daftari.Services
 
 			var ClientPaymentDate = await _clientpaymentDateRepository.GetAllToDayPaymentsDateViewAsync(userId);
 
+			if (!ClientPaymentDate.Any())
+			{
+				return Enumerable.Empty<ClientsPaymentDateView>();
+			}
+
 			if (ClientPaymentDate == null)
 			{
-				throw new KeyNotFoundException($"no paymentDate founded");
+				throw new Exception("No Content");
 			}
+
 
 			return ClientPaymentDate;
 		}

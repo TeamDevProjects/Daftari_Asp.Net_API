@@ -15,9 +15,7 @@ namespace Daftari.Repositories
 			try
 			{
 
-				var results = await _context.ClientsTransactionsViews.Where(c=>c.UserId == userId && c.ClientId == clientId ).ToListAsync(); // This retrieves all records in the DbSet
-				if (!results.Any()) throw new KeyNotFoundException("no transacrions founded");
-				
+				var results = await _context.ClientsTransactionsViews.Where(c=>c.UserId == userId && c.ClientId == clientId ).ToListAsync(); // This retrieves all records in the DbSet				
 				return results;
 			}
 			catch (Exception ex) { throw; }

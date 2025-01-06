@@ -25,11 +25,16 @@
 				context.Response.StatusCode = StatusCodes.Status404NotFound;
 				await context.Response.WriteAsJsonAsync(new { error = ex.Message });
 			}
+			catch (Exception ex) when (ex.Message.Contains("No Content")) // شرط للتحقق من رسالة محددة
+			{
+				context.Response.StatusCode = StatusCodes.Status204NoContent;
+			}
 			catch (Exception ex)
 			{
 				context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 				await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred.", details = ex.Message });
 			}
+
 		}
 	}
 }

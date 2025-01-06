@@ -22,12 +22,12 @@ namespace Daftari.Controllers
 			{
 				var sectors = await _context.SectorsViews.ToListAsync();
 
-				if (sectors.Count == 0) 
-				{
-					return NoContent();
-				}
-
 				return Ok(sectors);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex) 
 			{

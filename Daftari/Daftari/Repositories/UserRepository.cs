@@ -16,9 +16,7 @@ namespace Daftari.Repositories
 			{
 				var users = await _context.UsersViews.ToListAsync();
 
-				if (users.Any()) return users;
-
-				return null;
+				return users;
 			}
 			catch (Exception) { return null; }
 		}
@@ -28,8 +26,6 @@ namespace Daftari.Repositories
 			try
 			{
 				var user = await _context.UsersViews.FirstOrDefaultAsync((u)=> u.UserId == userId);
-
-				if (user == null) return null;
 
 				return user;
 			}
@@ -43,9 +39,7 @@ namespace Daftari.Repositories
 			{
 				var users = await _context.UsersViews.Where((u) => u.Name.Contains(temp)).ToListAsync();
 
-				if (users.Any()) return users;
-
-				return null;
+				return users;
 			}
 			catch (Exception) { return null; }
 		}

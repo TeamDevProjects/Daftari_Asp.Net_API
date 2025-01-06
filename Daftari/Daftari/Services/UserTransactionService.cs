@@ -104,21 +104,24 @@ namespace Daftari.Services
         {
             // check is exist 
             var existUserTransaction = await _userTransactionRepository.GetByIdAsync(UserTransactionData.UserTransactionId);
-            
-            if (existUserTransaction == null) throw new KeyNotFoundException("Unable to find user transaction");
-            
-            // Handel Uploading Image
-            if (UserTransactionData.ImageData == Array.Empty<byte>() && UserTransactionData.ImageType == string.Empty)
+			var transaction = await _transactionRepository.GetByIdAsync(existUserTransaction.TransactionId);
+			var userTotalAmount = await _userTotalAmountService.GetTotalAmountByUserId(existUserTransaction.UserId);
+			if (existUserTransaction == null) throw new KeyNotFoundException("Unable to find user transaction");
+
+			// Handel Uploading Image if there are existing img uploded
+			if (UserTransactionData.FormImage != null )
             {
                 var ImageObj = await ImageHelper.HandelImageServices(UserTransactionData.FormImage!);
 
                 UserTransactionData.ImageData = ImageObj.ImageData;
                 UserTransactionData.ImageType = ImageObj.ImageType;
             }
-
-            // update transaction only
-            var transaction = await _transactionRepository.GetByIdAsync(existUserTransaction.TransactionId);
-            var userTotalAmount = await _userTotalAmountService.GetTotalAmountByUserId(existUserTransaction.UserId);
+            else
+            {
+				// dont update the prev Image
+				UserTransactionData.ImageData = transaction.ImageData;
+				UserTransactionData.ImageType = transaction.ImageType;
+			}           
 
 			// calc total amount 
 			var oldAmount = transaction.Amount;
@@ -176,7 +179,10 @@ namespace Daftari.Services
         {
             var userTransactions = await _userTransactionRepository.GetAllAsync(userId);
 
-            if (!userTransactions.Any()) throw new KeyNotFoundException($"there are no UserTransActions has userId = {userId}");
+			if (!userTransactions.Any())
+			{
+				throw new Exception("No Content");
+			}
 
             return userTransactions;
 

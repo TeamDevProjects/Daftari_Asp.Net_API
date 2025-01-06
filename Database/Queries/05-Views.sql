@@ -66,22 +66,26 @@ FROM    SupplierTransactions LEFT JOIN
 
 -- ClientPaymentDateView
 ALTER VIEW ClientsPaymentDateView AS
-SELECT  ClientPaymentDates.ClientPaymentDateId, ClientPaymentDates.UserId, People.Name, PaymentDates.DateOfPayment,
+SELECT  ClientPaymentDates.ClientPaymentDateId, ClientPaymentDates.UserId, People.Name, PaymentDates.DateOfPayment,ClientTotalAmounts.TotalAmount,
 		PaymentMethods.PaymentMethodName, PaymentDates.Notes, ClientPaymentDates.ClientId, People.Phone
 FROM    ClientPaymentDates LEFT JOIN
         PaymentDates ON ClientPaymentDates.PaymentDateId = PaymentDates.PaymentDateId AND ClientPaymentDates.PaymentDateId = PaymentDates.PaymentDateId LEFT JOIN
         PaymentMethods ON PaymentDates.PaymentMethodId = PaymentMethods.PaymentMethodId LEFT JOIN
         Clients ON ClientPaymentDates.ClientId = Clients.ClientId AND ClientPaymentDates.ClientId = Clients.ClientId LEFT JOIN
+		ClientTotalAmounts ON Clients.ClientId = ClientTotalAmounts.ClientId AND Clients.ClientId = ClientTotalAmounts.ClientId LEFT JOIN
         People ON Clients.PersonId = People.PersonId
 
+
+		select * from SuppliersPaymentDateView
 -- SuppliersPaymentDateView
 ALTER VIEW SuppliersPaymentDateView AS
-SELECT  SupplierPaymentDates.SupplierPaymentDateId, SupplierPaymentDates.UserId ,SupplierPaymentDates.SupplierId, PaymentDates.DateOfPayment, PaymentDates.Notes,
+SELECT  SupplierPaymentDates.SupplierPaymentDateId, SupplierPaymentDates.UserId ,SupplierPaymentDates.SupplierId, PaymentDates.DateOfPayment,SupplierTotalAmounts.TotalAmount, PaymentDates.Notes,
 		People.Name, People.Phone, PaymentMethods.PaymentMethodName
 FROM    SupplierPaymentDates LEFT JOIN
         PaymentDates ON SupplierPaymentDates.PaymentDateId = PaymentDates.PaymentDateId AND SupplierPaymentDates.PaymentDateId = PaymentDates.PaymentDateId LEFT JOIN
 	    PaymentMethods ON PaymentDates.PaymentMethodId = PaymentMethods.PaymentMethodId LEFT JOIN
 	    Suppliers ON SupplierPaymentDates.SupplierId = Suppliers.SupplierId AND SupplierPaymentDates.SupplierId = Suppliers.SupplierId LEFT JOIN
-	    People ON Suppliers.PersonId = People.PersonId
+	    SupplierTotalAmounts ON Suppliers.SupplierId = SupplierTotalAmounts.SupplierId AND Suppliers.SupplierId = SupplierTotalAmounts.SupplierId LEFT JOIN
+		People ON Suppliers.PersonId = People.PersonId
 
 

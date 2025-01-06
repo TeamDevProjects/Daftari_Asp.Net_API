@@ -1,4 +1,5 @@
 ﻿using Daftari.Entities;
+using Daftari.Enums;
 using Daftari.Interfaces;
 using Daftari.Services.IServices;
 
@@ -36,13 +37,13 @@ namespace Daftari.Services
 
             decimal totalAmount = Amount;
 
-            if (TransactionTypeId == 1)
+            if (TransactionTypeId == (byte)enTransactionTypes.Payment)
             {
                 totalAmount = existClientTotalAmount.TotalAmount - Amount;
 
                 existClientTotalAmount.TotalAmount = totalAmount;
             }
-            else if (TransactionTypeId == 2)
+            else if (TransactionTypeId == (byte)enTransactionTypes.Withdrawal)
             {
                 totalAmount = existClientTotalAmount.TotalAmount + Amount;
 

@@ -1,6 +1,7 @@
 ﻿using Daftari.Data;
 using Daftari.Dtos.PaymentDates.Bases;
 using Daftari.Dtos.PaymentDates.ClientPaymentDateDtos;
+using Daftari.Entities;
 using Daftari.Services;
 using Daftari.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -141,7 +142,8 @@ namespace Daftari.Controllers
 			{
 				return NotFound(ex.Message );
 			
-			}catch (Exception ex) 
+			}
+			catch (Exception ex) 
 			{
 				return StatusCode(StatusCodes.Status500InternalServerError, $"Database error: {ex.Message}");
 			}
@@ -197,6 +199,7 @@ namespace Daftari.Controllers
 			}
 		}
 		
+		
 		[HttpGet("today")]
 		public async Task<IActionResult> GetAllTodayClientPaymentDateByClientId()
 		{
@@ -209,12 +212,17 @@ namespace Daftari.Controllers
 				}
 
 				var todayClientPaymentDates = await _clientPaymentDateService.GetAllToDayPaymentsDateAsync(userId);
-
+				
 				return Ok(todayClientPaymentDates);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex) 
 			{
@@ -234,12 +242,18 @@ namespace Daftari.Controllers
 				}
 
 				var closerClientPaymentDates = await _clientPaymentDateService.GetAllCloserPaymentsDateAsync(userId);
+				
 
 				return Ok(closerClientPaymentDates);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex) 
 			{
@@ -259,12 +273,17 @@ namespace Daftari.Controllers
 				}
 
 				var oldClientPaymentDates = await _clientPaymentDateService.GetAllOldPaymentsDateAsync(userId);
-
+				
 				return Ok(oldClientPaymentDates);
 			}
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound(ex.Message);
+			}
+			catch (Exception ex) when (ex.Message.Contains("No Content"))
+			{
+				throw new Exception("No Content");
+
 			}
 			catch (Exception ex)
 			{

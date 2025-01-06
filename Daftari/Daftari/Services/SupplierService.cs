@@ -109,25 +109,90 @@ namespace Daftari.Services
 		{
 			var suppliers = await _supplierRepository.GetAll(userId);
 
-			if (suppliers == null) throw new KeyNotFoundException($"There are no clients in database.");
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
 
 			return suppliers;
 		}
 
-		public async Task<IEnumerable<SuppliersView>> GetAllClientsOrderedByName(int userId)
+		public async Task<IEnumerable<SuppliersView>> GetAllOrderedByName(int userId)
 		{
-			var suppliers = await _supplierRepository.GetAllOrderedByName(userId);
+			var suppliers = await _supplierRepository.GetOrderedByName(userId);
 
-			if (suppliers == null) throw new KeyNotFoundException($"There are no clients in database.");
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
 
 			return suppliers;
 		}
 
-		public async Task<IEnumerable<SuppliersView>> SearchForClientsByName(string temp)
-		{
-			var suppliers = await _supplierRepository.SearchByName(temp);
 
-			if (suppliers == null) throw new KeyNotFoundException($"There are no clients in database.");
+		public async Task<IEnumerable<SuppliersView>> GetAllOrderedByCloserPaymentDates(int userId)
+		{
+			var suppliers = await _supplierRepository.GetOrderedByCloserPaymentDates(userId);
+
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
+
+			return suppliers;
+		}
+
+		public async Task<IEnumerable<SuppliersView>> GetAllOrderedByOlderPaymentDates(int userId)
+		{
+			var suppliers = await _supplierRepository.GetOrderedByOlderPaymentDates(userId);
+
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
+
+			return suppliers;
+		}
+
+		public async Task<IEnumerable<SuppliersView>> GetAllOrderedByLargestTotalAmount(int userId)
+		{
+			var suppliers = await _supplierRepository.GetOrderedByLargestTotalAmount(userId);
+
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
+
+			return suppliers;
+		}
+
+		public async Task<IEnumerable<SuppliersView>> GetAllOrderedBySmallestTotalAmount(int userId)
+		{
+			var suppliers = await _supplierRepository.GetOrderedBySmallestTotalAmount(userId);
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			
+            if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
+
+			return suppliers;
+		}
+
+		public async Task<IEnumerable<SuppliersView>> SearchForSuppliers(string temp)
+		{
+			var suppliers = await _supplierRepository.Search(temp);
+
+			if (!suppliers.Any())
+			{
+				throw new Exception("No Content");
+			}
+			if (suppliers == null) throw new KeyNotFoundException($"There are no suppliers in database.");
 
 			return suppliers;
 		}
